@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "jsx": "preserve",
+        "jsxImportSource": "preact",
+        "strict": true,
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "isolatedModules": true,
+        "allowSyntheticDefaultImports": true,
+        "noEmit": true,
+        "skipLibCheck": true,
+    },
+    "files": [
+        "./node_modules/vite/client.d.ts", 
+        "./node_modules/vite-plugin-info/client.d.ts"
+    ],
+    "include": ["./src/"],
+    "exclude": ["./vite.config/"]
+}

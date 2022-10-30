@@ -1,0 +1,34 @@
+{
+  "private": true,
+  "name": "polymer-computing",
+  "scripts": {
+    "start": "vite --config ./vite.config/vite.config.ts",
+    "host": "vite --config ./vite.config/vite.config.ts --host",
+    "build": "vite --config ./vite.config/vite.config.ts build"
+  },
+  "devDependencies": {
+    "@amplitude/analytics-browser": "^1.5.8",
+    "@emotion/babel-plugin": "^11.10.5",
+    "@emotion/css": "^11.10.5",
+    "@preact/preset-vite": "^2.4.0",
+    "@types/crypto-js": "^4.1.1",
+    "@types/jsdom": "^20.0.0",
+    "@types/lodash": "^4.14.186",
+    "@types/memoizee": "^0.4.8",
+    "crypto-js": "^4.1.1",
+    "emotion-icons": "^3.27.0",
+    "immutability-helper": "^3.1.1",
+    "jsdom": "^20.0.2",
+    "lodash": "^4.17.21",
+    "memoizee": "^0.4.15",
+    "mini-svg-data-uri": "^1.4.4",
+    "popmotion": "^11.0.5",
+    "preact": "^10.11.2",
+    "recoil": "^0.7.6",
+    "typescript": "^4.8.4",
+    "vite": "^3.2.1",
+    "vite-plugin-info": "^0.3.1",
+    "vite-plugin-pwa": "^0.13.1",
+    "vite-plugin-singlefile": "^0.11.1"
+  }
+}

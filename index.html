@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+
+	<title>polymer-computing</title>
+	<meta name="description" content="polymer-computing">
+
+	<link rel="icon" sizes="any" href="./favicon.ico">
+	<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+	<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+	<meta name="theme-color" content="#f4f1ff">
+
+	<link href="https://fonts.cdnfonts.com/css/bahnschrift" rel="stylesheet">
+</head>
+
+<body style="
+	margin: 0; 
+	background-color: #f4f1ff;
+	touch-action: manipulation;
+">
+	<script type="module">
+		import { render, h } from "preact";
+		import { RecoilRoot } from 'recoil';
+
+		import { App } from "./src/App";
+
+		const Component =
+			import.meta.env.DEV
+				? await (async () => {
+					const name = document.location.pathname.substring(1);
+					if (!name) { return App; }
+					return (await import(/* @vite-ignore */"./src/" + name))[name];
+				})()
+				: App;
+
+		render(
+			h(RecoilRoot, {},
+				h(Component, {})),
+			document.body);
+
+	</script>
+</body>
+
+</html>
