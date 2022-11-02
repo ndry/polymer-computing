@@ -1,11 +1,31 @@
 import "./initAnalytics";
 
 import { css, cx } from "@emotion/css";
-import { useEffect, useMemo, useRef } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { appVersion } from "./appVersion";
 import { atom, useRecoilValue } from "recoil";
 import update, { Spec } from "immutability-helper";
-import { Mesh, MeshNormalMaterial, PerspectiveCamera, Scene, Sphere, SphereGeometry, Vector3, WebGLRenderer } from "three";
+import {
+    Vector3,
+    WebGLRenderer, PerspectiveCamera, Scene,
+    Mesh,
+    MeshPhongMaterial,
+    SphereGeometry,
+    Material,
+    DirectionalLight,
+    AmbientLight,
+    Color,
+    BufferGeometry,
+    CylinderGeometry,
+    IcosahedronGeometry,
+    Group,
+    Object3D,
+} from "three";
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { substanceColors } from "./substanceColors";
+import { mixAddTap } from "./utils/mixAddTap";
+import memoizee from "memoizee";
+import { mixBody, PhysicsBody, PhysicsLink, physicsTick } from "./physics";
 
 export type SubstanceId = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
@@ -68,6 +88,31 @@ const s: Solution = {
             { action: "grab", subject: "brm", object: { s: 1 } },
             { action: "link", subject1: "arm", subject2: "brm" },
             { action: "grab", subject: "arm", object: { arm: "brm", d: "ox" } },
+            { action: "grab", subject: "brm", object: { s: 1 } },
+            { action: "link", subject1: "arm", subject2: "brm" },
+            { action: "grab", subject: "arm", object: { arm: "brm", d: "ox" } },
+        ]
+    }, {
+        entryPoint: [
+        ],
+        mainLoop: [
+            { action: "grab", subject: "arm", object: { s: 2 } },
+            { action: "link", subject1: "arm", subject2: "brm" },
+            { action: "grab", subject: "brm", object: { arm: "arm", d: "ox" } },
+            { action: "noop" },
+            { action: "noop" },
+            { action: "noop" },
+        ]
+    }, {
+        entryPoint: [
+        ],
+        mainLoop: [
+            { action: "noop" },
+            { action: "noop" },
+            { action: "noop" },
+            { action: "noop" },
+            { action: "grab", subject: "arm", object: { arm: "brm", d: "nx" } },
+            { action: "grab", subject: "brm", object: { arm: "arm", d: "ox" } },
         ]
     }],
 }
@@ -118,12 +163,97 @@ export const worldRecoil = atom({
 
 export const landscapeWidth = 922;
 
+const renderer = memoizee(canvas => {
+    const renderer = new WebGLRenderer({
+        antialias: true,
+        canvas,
+    });
+
+    const scene = new class extends mixAddTap(Scene) {
+        background = new class extends Color {
+            constructor() {
+                super();
+                this.setStyle(document.body.style.backgroundColor);
+            }
+        }()
+
+        directionalLight = this.addTap(new DirectionalLight(), obj => {
+            obj.position.set(-5, 0, 5);
+            obj.intensity = 0.3;
+        })
+
+        ambientLight = this.addTap(new AmbientLight(), obj => {
+            obj.intensity = 0.7;
+        })
+    }();
+
+    const aspect = renderer.domElement.width / renderer.domElement.height;
+    const camera = new PerspectiveCamera(70, aspect, 0.01, 1000);
+    camera.position.set(5, 15, 15);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    return {
+        renderer,
+        scene,
+        camera,
+        controls,
+        render: (g: Object3D) => {
+            controls.update();
+            scene.add(g);
+            renderer.render(scene, camera);
+            scene.remove(g);
+        }
+    }
+});
+
+class Ball extends mixBody(Mesh) {
+    geometry = new SphereGeometry();
+    material = new class extends MeshPhongMaterial {
+        shininess = 0;
+    }();
+    mass = 0.01;
+}
+const getOrCreateBallFromCache = memoizee((key: any, i: number) => {
+    const ball = new Ball();
+    ball.position.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
+    return ball;
+}, {
+    max: 1000,
+});
+
+
+class XrmBody extends mixBody(Mesh) {
+    geometry = new IcosahedronGeometry(0.5);
+    material = new class extends MeshPhongMaterial {
+        shininess = 0;
+        color = new Color(0xffaadd)
+    }();
+    mass = 0.02;
+}
+const getOrCreateXrmBodyFromCache = memoizee((key: any, i: number) => {
+    const x = new XrmBody();
+    x.position.set(Math.random(), -i, Math.random());
+    return x;
+}, {
+    max: 1000,
+});
+
 export function App() {
     // const world = useRecoilValue(worldRecoil);
     const version = <div>
         <span className={css({ fontSize: "16px", })} >{appVersion.split("+")[0]}</span>
         <span className={css({ fontSize: "10px", })} >+{appVersion.split("+")[1]}</span>
     </div>;
+
+    const [step, setStep] = useState(0);
+    const [autoplay, setAutoplay] = useState(false);
+
+    useEffect(() => {
+        if (!autoplay) { return; }
+        const handler = setInterval(() => setStep(step => step + 1), 500);
+        return () => clearInterval(handler);
+    }, [autoplay])
 
     const initialUpc: Upc = {
         sid: 0,
@@ -137,18 +267,18 @@ export function App() {
                 d: 1,
             },
             brm: {
-                ox: undefined,
+                ox: initialUpc,
                 d: 1,
             },
             crm: {
-                ox: undefined,
+                ox: initialUpc,
                 d: 1,
             },
         } as Xrm)),
         upi: [initialUpc] as Upc[]
     };
     const worldSnapshots = [] as any[];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < step; i++) {
         worldSnapshots.push(<div>
             {i}<br />
             xrms: {world.xrms.map(xrm => JSON.stringify({
@@ -197,6 +327,14 @@ export function App() {
                                 arm.ox = xrm[action.object.arm].ox;
                                 break;
                             }
+                            case "nx": {
+                                arm.ox = xrm[action.object.arm].ox?.nx;
+                                break;
+                            }
+                            case "ux": {
+                                arm.ox = xrm[action.object.arm].ox?.ux;
+                                break;
+                            }
                             default:
                                 throw "not implemeted";
                         }
@@ -224,80 +362,109 @@ export function App() {
 
     useEffect(() => {
         if (!canvasRef.current) { return; }
-        const renderer = new WebGLRenderer({
-            antialias: true,
-            canvas: canvasRef.current,
-        });
 
-        const scene = new Scene();
+        const { render } = renderer(canvasRef.current);
 
-        class Ball extends Mesh {
-            constructor() {
-                super(
-                    new SphereGeometry(),
-                    new MeshNormalMaterial());
-            }
-            
-            mass = 1;
-            aggregatedForce = new Vector3(0, 0, 0);
-            velocity = new Vector3(0, 0, 0);
-        }
+        const scene = new (mixAddTap(Group))();
 
-        const balls = Array.from({ length: 5 }, (_, i) => {
-            const ball = new Ball;
-            ball.position.set(i, Math.sqrt(i), 0);
+        const balls = world.upi.map((upc, i) => {
+            const ball = scene.addTap(getOrCreateBallFromCache(render, i));
+            ball.material.color.setStyle(substanceColors[upc.sid]);
             return ball;
         });
-        scene.add(...balls);
+        balls[0].isKinematic = true;
 
-        const aspect = renderer.domElement.width / renderer.domElement.height;
-        const camera = new PerspectiveCamera(70, aspect, 0.01, 10);
-        camera.position.z = 10;
+        const links = [] as PhysicsLink[];
+
+        const ensureLink = (ball: PhysicsBody, ball2: PhysicsBody) => {
+            const existingLink = links.find(({ body1, body2 }) =>
+                (body2 === ball && body1 === ball2)
+                || (body1 === ball && body2 === ball2));
+            if (!existingLink) {
+                const link = scene.addTap(new class extends Mesh {
+                    geometry = new CylinderGeometry();
+                    material = new class extends MeshPhongMaterial {
+                        shininess = 0;
+                        color = new Color(0xffaaaa)
+                    }();
+                    body1 = ball;
+                    body2 = ball2;
+                    onBeforeRender = () => {
+                        link.position.copy(link.body1.position);
+                        link.position.lerp(link.body2.position, 0.5);
+                        link.lookAt(link.body1.position);
+                        link.rotateX(Math.PI / 2);
+                        const d = link.body1.position.distanceTo(link.body2.position);
+                        link.scale.set(0.1, d - 2.5, 0.1);
+                    };
+                    k = 0.05;
+                }());
+                links.push(link);
+            }
+        }
+
+        for (let i = 0; i < balls.length; i++) {
+            const upc = world.upi[i];
+            const ball = balls[i];
+            if (upc.nx) { ensureLink(ball, balls[world.upi.indexOf(upc.nx)]); }
+            if (upc.ux) { ensureLink(ball, balls[world.upi.indexOf(upc.ux)]); }
+        }
+
+        function addXrmLink(x: PhysicsBody, ball: PhysicsBody) {
+            const link = scene.addTap(new class extends Mesh {
+                geometry = new CylinderGeometry();
+                material = new class extends MeshPhongMaterial {
+                    shininess = 0;
+                    color = new Color(0xffaadd)
+                }();
+                body1 = ball;
+                body2 = x;
+                update() {
+                    this.position.copy(this.body1.position);
+                    this.position.lerp(this.body2.position, 0.5);
+                    this.lookAt(this.body1.position);
+                    this.rotateX(Math.PI / 2);
+                    const d = this.body1.position.distanceTo(this.body2.position);
+                    this.scale.set(0.1, d, 0.1);
+                }
+                onBeforeRender = this.update.bind(this);
+                k = 0.1;
+            }());
+            links.push(link);
+        }
+
+        const xrms = world.xrms.map((xrm, i) => {
+            const x = scene.addTap(getOrCreateXrmBodyFromCache(render, i));
+            if (xrm.arm.ox) { addXrmLink(x, balls[world.upi.indexOf(xrm.arm.ox)]); }
+            if (xrm.brm.ox) { addXrmLink(x, balls[world.upi.indexOf(xrm.brm.ox)]); }
+            if (xrm.crm.ox) { addXrmLink(x, balls[world.upi.indexOf(xrm.crm.ox)]); }
+            return x;
+        });
+
+
+        const bodies = [...balls, ...xrms];
 
         const gravity = new Vector3(0, -9.81, 0);
 
-        const vs = [
-            new Vector3(),
-            new Vector3(),
-        ] as const;
-
+        let handler: number;
         let lastTimeMs = performance.now();
         const tick = (timeMs: number) => {
-            handler = requestAnimationFrame(tick);
-            const dt = (timeMs - lastTimeMs) / 1000;
-            
-            for (const ball of balls) {
-                ball.aggregatedForce.setScalar(0);
-            }
-            for (const ball of balls) {
-                // ball.aggregatedForce.addScaledVector(gravity, ball.mass);
-                for (const b of balls) {
-                    if (b === ball) { continue; }
-                    const d = vs[0];
-                    d.copy(b.position);
-                    d.sub(ball.position);
-                    const r = d.length();
-                    const f = vs[1];
-                    f.copy(d);
-                    f.multiplyScalar(ball.mass * b.mass / (r * r * r));
-                    ball.aggregatedForce.add(f);
-                    f.copy(d);
-                    f.multiplyScalar(-ball.mass * b.mass / (r * r * r * r));
-                    ball.aggregatedForce.add(f);
-                }
-            }
-            for (const ball of balls) {
-                ball.velocity.addScaledVector(ball.aggregatedForce, dt / ball.mass);
-                ball.velocity.clampLength(0, 1000);
-                ball.position.addScaledVector(ball.velocity, dt);
-            }
-            
-            renderer.render( scene, camera );
+            const dt = Math.min(0.1, (timeMs - lastTimeMs) / 1000);
+
+            physicsTick({
+                dt,
+                gravity,
+                bodies,
+                links,
+            });
+
+            render(scene);
             lastTimeMs = timeMs;
+            handler = requestAnimationFrame(tick);
         };
-        let handler = requestAnimationFrame(tick);
+        tick(performance.now());
         return () => cancelAnimationFrame(handler);
-    }, [canvasRef.current]);
+    }, [canvasRef.current, world]);
 
     return <div className={cx(
         css`& {
@@ -316,21 +483,30 @@ export function App() {
             position: relative;
             margin: auto;
         }`)}>
-            <canvas ref={canvasRef} width="500" height="300"></canvas>
+            <canvas ref={canvasRef} width="700" height="400"></canvas><br />
+            <button onClick={() => setStep(0)}>reset</button>
+            <button onClick={() => setStep(step + 1)}>step</button>
+            <button onClick={() => setAutoplay(!autoplay)}>autoplay</button>
+            {step}
             {s.sources.map((source, i) => <div>
                 <div>xrm #{i}:</div>
                 <code>
                     entry point:<br />
-                    {source.entryPoint.map((line, i) => <>
+                    {source.entryPoint.map((line, i) => <span>
                         {i.toString().padStart(2, "0")}| {JSON.stringify(line)}<br />
-                    </>)}
+                    </span>)}
                     main loop:<br />
-                    {source.mainLoop.map((line, i) => <>
-                        {i.toString().padStart(2, "0")}| {JSON.stringify(line)}<br />
-                    </>)}
+                    {source.mainLoop.map((line, j) => <span className={cx(css({
+                        background:
+                            j === (step % s.sources[i].mainLoop.length)
+                                ? "yellow"
+                                : "transparent",
+                    }))}>
+                        {j.toString().padStart(2, "0")}| {JSON.stringify(line)}<br />
+                    </span>)}
                 </code>
             </div>)}
-            {worldSnapshots.map(s => <div>{s}</div>)}
+            {/* {worldSnapshots.map(s => <div>{s}</div>)} */}
             {version}
         </div>
     </div>
