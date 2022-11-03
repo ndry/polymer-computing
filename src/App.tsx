@@ -31,53 +31,74 @@ export type SubstanceId = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export type XrmArmKey = "arm" | "brm" | "crm";
 
-export type XrmAction = {
-    action: "grab",
-    subject: XrmArmKey,
-    object: {
-        s: SubstanceId
-    } | {
-        arm: XrmArmKey,
-        d: `${"n" | "o" | "u"}x`,
-    } | undefined,
-} | {
-    action: "link",
-    subject1: XrmArmKey,
-    subject2: XrmArmKey,
-} | {
-    action: "unlink",
-    subject1: XrmArmKey,
-    subject2: XrmArmKey,
-} | {
-    action: "rotate",
-    subject: XrmArmKey,
-} | {
-    action: "noop",
-}
+export type XrmSourceLine =
+    ["grab", XrmArmKey,
+        undefined
+        | { sid: SubstanceId }
+        | { brm: XrmArmKey }
+        | { brm: XrmArmKey, d: number, rel: boolean }]
+    // | ["rotate", XrmArmKey, number]
+    // | ["flip", XrmArmKey, number]
+    | ["link", XrmArmKey, XrmArmKey]
+    | ["unlink", XrmArmKey, XrmArmKey]
+    | ["noop"];
 
+export type Link = {
+    0: Upc,
+    1: Upc,
+};
+
+export type XrmArm = {
+    flip: -1 | 1,
+} & ({
+    ox: Upc,
+    from: Link,
+} | {
+    ox: Upc | undefined,
+    from: undefined,
+})
 export type Xrm = {
-    arm: {
-        ox: Upc | undefined,
-        d: -1 | 1,
-    },
-    brm: Xrm["arm"],
-    crm: Xrm["arm"],
+    arm: XrmArm,
+    brm: XrmArm,
+    crm: XrmArm,
 }
 
 export type Upc = {
     sid: number,
-    nx: Upc | undefined,
-    ux: Upc | undefined,
+    links: Link[],
 }
 
 export type Solution = {
     problem: undefined,
     sources: Array<{
-        entryPoint: XrmAction[],
-        mainLoop: XrmAction[],
+        entryPoint: XrmSourceLine[],
+        mainLoop: XrmSourceLine[],
     }>,
 }
 
+
+// const s: Solution = {
+//     problem: undefined,
+//     sources: [{
+//         entryPoint: [
+//         ],
+//         mainLoop: [
+//             ["grab", "brm", { sid: 1 }],
+//             ["grab", "crm", { sid: 2 }],
+//             ["link", "brm", "crm"],
+//             ["grab", "brm", { sid: 3 }],
+//             ["link", "brm", "crm"],
+//             ["grab", "crm", { brm: "crm", d: 0, rel: false }],
+//             ["link", "brm", "crm"],
+//             ["grab", "brm", { sid: 4 }],
+//             ["link", "brm", "crm"],
+//             ["grab", "crm", { brm: "crm", d: 0, rel: false }],
+//             ["link", "brm", "crm"],
+//             ["grab", "crm", { brm: "crm", d: 1, rel: false }],
+//             ["link", "brm", "crm"],
+//         ]
+//     }],
+// }
 
 const s: Solution = {
     problem: undefined,
@@ -85,81 +106,58 @@ const s: Solution = {
         entryPoint: [
         ],
         mainLoop: [
-            { action: "grab", subject: "brm", object: { s: 1 } },
-            { action: "link", subject1: "arm", subject2: "brm" },
-            { action: "grab", subject: "arm", object: { arm: "brm", d: "ox" } },
-            { action: "grab", subject: "brm", object: { s: 1 } },
-            { action: "link", subject1: "arm", subject2: "brm" },
-            { action: "grab", subject: "arm", object: { arm: "brm", d: "ox" } },
+            ["grab", "brm", { sid: 1 }],
+            ["link", "arm", "brm"],
+            ["grab", "arm", { brm: "brm" }],
+            ["grab", "brm", { sid: 2 }],
+            ["link", "arm", "brm"],
+            ["grab", "arm", { brm: "brm" }],
+            ["grab", "brm", { sid: 3 }],
+            ["link", "arm", "brm"],
+            ["grab", "arm", { brm: "brm" }],
+            ["grab", "brm", { sid: 2 }],
+            ["link", "arm", "brm"],
+            ["grab", "arm", { brm: "brm" }],
+            ["grab", "brm", { sid: 3 }],
+            ["link", "arm", "brm"],
+            ["grab", "arm", { brm: "brm" }],
+            ["grab", "brm", { sid: 2 }],
+            ["link", "arm", "brm"],
+            ["grab", "arm", { brm: "brm" }],
+            ["grab", "brm", { brm: "crm", d: 0 }],
+            ["unlink", "brm", "crm"],
+            ["link", "arm", "brm"],
+            ["grab", "arm", { brm: "crm" }],
         ]
     }, {
         entryPoint: [
         ],
         mainLoop: [
-            { action: "grab", subject: "arm", object: { s: 2 } },
-            { action: "link", subject1: "arm", subject2: "brm" },
-            { action: "grab", subject: "brm", object: { arm: "arm", d: "ox" } },
-            { action: "noop" },
-            { action: "noop" },
-            { action: "noop" },
-        ]
-    }, {
-        entryPoint: [
-        ],
-        mainLoop: [
-            { action: "noop" },
-            { action: "noop" },
-            { action: "noop" },
-            { action: "noop" },
-            { action: "grab", subject: "arm", object: { arm: "brm", d: "nx" } },
-            { action: "grab", subject: "brm", object: { arm: "arm", d: "ox" } },
+            ["grab", "brm", { sid: 1 }],
+            ["noop"],
+            ["grab", "arm", { brm: "crm", d: 0 }],
+            ["link", "arm", "brm"],
+            ["grab", "arm", { sid: 4 }],
+            ["link", "arm", "brm"],
+            ["grab", "arm", { sid: 4 }],
+            ["link", "arm", "brm"],
+            ["grab", "arm", { brm: "crm" }],
+            ["grab", "brm", { brm: "crm" }],
+            ["noop"],
+            ["noop"],
+            ["noop"],
+            ["noop"],
+            ["noop"],
+            ["noop"],
+            ["noop"],
+            ["noop"],
+            ["noop"],
+            ["noop"],
+            ["noop"],
+            ["noop"],
         ]
     }],
 }
-
-export type World = {
-    time: number,
-    xrms: Xrm[],
-    upi: Record<string, Upc>,
-}
-
-// export function step(world: World) {
-//     let nextWorld = update(world, { time: { $set: world.time + 1 } });
-//     const t = world.time % (Math.max(...world.xrms.map(x => x.code.length)));
-//     for (let i = 0; i < world.xrms.length; i++) {
-//         const xrm = world.xrms[i];
-//         const action = xrm.code[t];
-//         if (!action) { continue; }
-//         nextWorld = update(nextWorld, ((): Spec<World> => {
-//             switch (action.action) {
-//                 case "grab": {
-//                     return { 
-//                         xrms: {
-//                             i: {
-//                                 [action.subject]: {
-//                                     ox: {
-//                                         $set: {
-//                                             x: xrm[action.object],
-//                                         }
-//                                     }
-//                                 } as Spec<Xrm[XrmArmKey]>,
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         })());
-//     }
-// }
-
-export const worldRecoil = atom({
-    key: "world",
-    default: {
-        time: 0,
-        xrms: [],
-        upi: {},
-    } as World
-})
 
 export const landscapeWidth = 922;
 
@@ -257,103 +255,164 @@ export function App() {
 
     const initialUpc: Upc = {
         sid: 0,
-        nx: undefined,
-        ux: undefined,
+        links: [],
     }
     let world = {
         xrms: s.sources.map(() => ({
             arm: {
                 ox: initialUpc,
-                d: 1,
+                from: undefined,
+                flip: 1,
             },
             brm: {
                 ox: initialUpc,
-                d: 1,
+                from: undefined,
+                flip: 1,
             },
             crm: {
                 ox: initialUpc,
-                d: 1,
+                from: undefined,
+                flip: 1,
             },
         } as Xrm)),
         upi: [initialUpc] as Upc[]
     };
     const worldSnapshots = [] as any[];
     for (let i = 0; i < step; i++) {
+        const sLink = (link: Link | undefined) => link ? (world.upi.indexOf(link[0]) + ":" + world.upi.indexOf(link[1])) : '-';
         worldSnapshots.push(<div>
             {i}<br />
             xrms: {world.xrms.map(xrm => JSON.stringify({
                 arm: {
                     ox: xrm.arm.ox ? world.upi.indexOf(xrm.arm.ox) : '-',
-                    d: xrm.arm.d,
+                    from: sLink(xrm.arm.from),
+                    flip: xrm.arm.flip,
                 },
                 brm: {
                     ox: xrm.brm.ox ? world.upi.indexOf(xrm.brm.ox) : '-',
-                    d: xrm.brm.d,
+                    from: sLink(xrm.brm.from),
+                    flip: xrm.brm.flip,
                 },
                 crm: {
                     ox: xrm.crm.ox ? world.upi.indexOf(xrm.crm.ox) : '-',
-                    d: xrm.crm.d,
+                    from: sLink(xrm.crm.from),
+                    flip: xrm.crm.flip,
                 },
             }))}<br />
             upi: {world.upi.map(upc => JSON.stringify({
                 sid: upc.sid,
-                nx: upc.nx ? world.upi.indexOf(upc.nx) : '-',
-                ux: upc.ux ? world.upi.indexOf(upc.ux) : '-',
+                links: upc.links.map(sLink),
             }))}<br />
         </div>);
+
         for (let j = 0; j < world.xrms.length; j++) {
             const xrm = world.xrms[j];
             const source = s.sources[j];
-            const action =
+            const line =
                 i < source.entryPoint.length
                     ? source.entryPoint[i]
                     : source.mainLoop[(i - source.entryPoint.length) % source.mainLoop.length];
-            switch (action.action) {
+
+            const command = line[0];
+
+            const other = (link: Link, upc: Upc) => link[link[0] === upc ? 1 : 0];
+            const atCircle = <T,>(arr: T[], i: number) => {
+                i = i % arr.length;
+                if (i < 0) { i += arr.length; }
+                return arr[i];
+            }
+
+            switch (command) {
                 case "grab": {
-                    const arm = xrm[action.subject];
-                    if (action.object === undefined) {
+                    const [, armKey, args] = line;
+                    const arm = xrm[armKey];
+                    if (!args) {
                         arm.ox = undefined;
-                    } else if ("s" in action.object) {
+                        arm.from = undefined;
+                        break;
+                    }
+
+                    if (!("brm" in args)) {
                         const upc: Upc = {
-                            sid: action.object.s,
-                            nx: undefined,
-                            ux: undefined,
+                            sid: args.sid,
+                            links: [],
                         };
                         world.upi.push(upc);
                         arm.ox = upc;
-                    } else {
-                        switch (action.object.d) {
-                            case "ox": {
-                                arm.ox = xrm[action.object.arm].ox;
-                                break;
-                            }
-                            case "nx": {
-                                arm.ox = xrm[action.object.arm].ox?.nx;
-                                break;
-                            }
-                            case "ux": {
-                                arm.ox = xrm[action.object.arm].ox?.ux;
-                                break;
-                            }
-                            default:
-                                throw "not implemeted";
+                        arm.from = undefined;
+                        break;
+                    }
+
+                    const brm = xrm[args.brm];
+                    if ("d" in args) {
+                        if (!brm.ox) { throw "not possible"; }
+                        const d = args.d * brm.flip;
+                        let base = 0;
+                        if (args.rel) {
+                            if (!brm.from) { throw "not possible"; }
+                            base = brm.ox.links.indexOf(brm.from);
                         }
+                        const link = atCircle(brm.ox.links, d + base);
+                        arm.ox = other(link, brm.ox);
+                        arm.from = link;
+                    } else {
+                        arm.ox = brm.ox;
+                        arm.from = brm.from;
                     }
                     break;
                 }
                 case "link": {
-                    const arm = xrm[action.subject1];
-                    const brm = xrm[action.subject2];
-                    if (arm.ox && brm.ox) {
-                        arm.ox.nx = brm.ox;
-                        brm.ox.ux = arm.ox;
-                    }
+                    const arm = xrm[line[1]];
+                    const brm = xrm[line[2]];
+                    if (!arm.ox) { throw "not possible"; }
+                    if (arm.ox.links.length >= 3) { throw "not possible"; }
+                    if (!brm.ox) { throw "not possible"; }
+                    if (brm.ox.links.length >= 3) { throw "not possible"; }
+                    if (arm.ox === brm.ox) { throw "not possible"; }
+
+                    const existingLink = arm.ox.links.length > 0
+                        && arm.ox.links.find(link =>
+                            (link[0] === arm.ox && link[1] === brm.ox)
+                            || (link[1] === arm.ox && link[0] === brm.ox));
+                    if (existingLink) { throw "not possible"; }
+
+                    const link = {
+                        "0": arm.ox,
+                        "1": brm.ox,
+                    };
+                    arm.ox.links.push(link);
+                    brm.ox.links.push(link);
+                    break;
+                }
+                case "unlink": {
+                    const arm = xrm[line[1]];
+                    const brm = xrm[line[2]];
+                    if (!arm.ox) { throw "not possible"; }
+                    if (!brm.ox) { throw "not possible"; }
+
+                    const link = arm.ox.links.find(link =>
+                        (link[0] === arm.ox && link[1] === brm.ox)
+                        || (link[1] === arm.ox && link[0] === brm.ox));
+
+                    if (!link) { throw "not possible"; }
+
+                    arm.ox.links.splice(arm.ox.links.indexOf(link), 1);
+                    brm.ox.links.splice(brm.ox.links.indexOf(link), 1);
+
+                    break;
                 }
                 case "noop": {
                     break;
                 }
-                default:
-                    throw "not implemeted";
+            }
+        }
+
+        for (const xrm of world.xrms) {
+            for (const arm of [xrm.arm, xrm.brm, xrm.crm]) {
+                const linkBroken = arm.from && arm.ox.links.indexOf(arm.from) < 0;
+                if (linkBroken) {
+                    (arm as XrmArm).from = undefined;
+                }
             }
         }
     }
@@ -406,8 +465,11 @@ export function App() {
         for (let i = 0; i < balls.length; i++) {
             const upc = world.upi[i];
             const ball = balls[i];
-            if (upc.nx) { ensureLink(ball, balls[world.upi.indexOf(upc.nx)]); }
-            if (upc.ux) { ensureLink(ball, balls[world.upi.indexOf(upc.ux)]); }
+            for (const link of upc.links) {
+                ensureLink(
+                    balls[world.upi.indexOf(link[0])],
+                    balls[world.upi.indexOf(link[1])]);
+            }
         }
 
         function addXrmLink(x: PhysicsBody, ball: PhysicsBody) {
@@ -483,7 +545,7 @@ export function App() {
             position: relative;
             margin: auto;
         }`)}>
-            <canvas ref={canvasRef} width="700" height="400"></canvas><br />
+            <canvas ref={canvasRef} width="700" height="700"></canvas><br />
             <button onClick={() => setStep(0)}>reset</button>
             <button onClick={() => setStep(step + 1)}>step</button>
             <button onClick={() => setAutoplay(!autoplay)}>autoplay</button>
