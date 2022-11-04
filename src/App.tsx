@@ -13,23 +13,13 @@ import { fishSolution as solution } from "./hardcodedSolutions";
 import { sceneForWorld } from "./sceneForWorld";
 import { rendererFor } from "./rendererFor";
 
-export const landscapeWidth = 922;
+import { PlaybackPanel } from "./PlaybackPanel";
 
 export function App() {
     // const world = useRecoilValue(worldRecoil);
-    const version = <div>
-        <span className={css({ fontSize: "16px", })} >{appVersion.split("+")[0]}</span>
-        <span className={css({ fontSize: "10px", })} >+{appVersion.split("+")[1]}</span>
-    </div>;
 
-    const [step, setStep] = useState(0);
-    const [autoplay, setAutoplay] = useState(false);
-
-    useEffect(() => {
-        if (!autoplay) { return; }
-        const handler = setInterval(() => setStep(step => step + 1), 500);
-        return () => clearInterval(handler);
-    }, [autoplay])
+    const stepState = useState(0);
+    const [step] = stepState;
 
 
     let world = initialWorld(solution);
@@ -71,39 +61,122 @@ export function App() {
             overflow: auto;
         }
         `,
-        css`&::-webkit-scrollbar { height: 0px; }`
     )}>
-        <div className={cx(css`& {
-            flex-grow: 1;
-            max-width: ${landscapeWidth}px;
-            position: relative;
-            margin: auto;
-        }`)}>
-            <canvas ref={canvasRef} width="700" height="700"></canvas><br />
-            <button onClick={() => setStep(0)}>reset</button>
-            <button onClick={() => setStep(step + 1)}>step</button>
-            <button onClick={() => setAutoplay(!autoplay)}>autoplay</button>
-            {step}
-            {solution.sources.map((source, i) => <div>
-                <div>xrm #{i}:</div>
-                <code>
-                    entry point:<br />
-                    {source.entryPoint.map((line, i) => <span>
-                        {i.toString().padStart(2, "0")}| {JSON.stringify(line)}<br />
-                    </span>)}
-                    main loop:<br />
-                    {source.mainLoop.map((line, j) => <span className={cx(css({
-                        background:
-                            j === (step % solution.sources[i].mainLoop.length)
-                                ? "yellow"
-                                : "transparent",
-                    }))}>
-                        {j.toString().padStart(2, "0")}| {JSON.stringify(line)}<br />
-                    </span>)}
-                </code>
-            </div>)}
-            {/* {worldSnapshots.map(s => <div>{s}</div>)} */}
-            {version}
+        <canvas
+            className={cx(css({
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                zIndex: -1,
+            }))}
+            ref={canvasRef}
+        ></canvas>
+        <div className={cx(css({
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            pointerEvents: "none",
+        }))}>
+            <div className={cx(css({
+                position: "relative",
+            }))}>
+                <PlaybackPanel
+                    stepState={stepState}
+                    className={cx(css({
+                        position: "absolute",
+                        margin: "0 0 0 25px",
+                        background: "salmon",
+                        borderRadius: "8px 8px 0px 0px",
+                        padding: "5px 10px 0px 10px",
+                        bottom: 0,
+                        pointerEvents: "all",
+                    }))} />
+                <div className={cx(css({
+                    position: "absolute",
+                    padding: "5px 20px 3px 10px",
+                    textAlign: "right",
+                    lineHeight: "0.8rem",
+                    fontSize: "24px",
+                    color: "salmon",
+                    opacity: 0.5,
+                    bottom: 0,
+                    right: 0,
+                }))}>
+                    {appVersion.split("+")[0]}<br />
+                    <span className={css({ fontSize: "0.5em", })} >{appVersion.split("+")[1]}</span>
+                </div>
+            </div>
+            <div className={cx(css({
+                height: 200,
+                background: "salmon",
+                borderRadius: "15px 15px 0px 0px",
+                margin: "0px 10px 0px 10px",
+                pointerEvents: "all",
+                overflow: "scroll",
+            }))}>
+                <div
+                    className={cx(css({
+                        padding: "5px",
+                        width: "fit-content",
+                    }))}
+                >
+                    {
+                        solution.sources.map((source, i) => {
+                            return <div
+                                className={cx(css({
+                                    margin: "5px",
+                                    background: "grey",
+                                    whiteSpace: "nowrap",
+                                }))}
+                            >
+                                {source.mainLoop.map((line, j) => {
+                                    return <div
+                                        className={cx(css({
+                                            width: 60,
+                                            display: "inline-block",
+                                            margin: "5px",
+                                            background:
+                                            j === (step % solution.sources[i].mainLoop.length)
+                                                ? "yellow"
+                                                : "lightgrey",
+                                        }))}
+                                    >
+                                        {(() => {
+                                            const [command] = line;
+                                            if (command === "noop") {
+                                                return "-"
+                                            }
+                                            if (command === "grab") {
+                                                const [, arm, args] = line;
+                                                return `g:${arm[0]}${(() => {
+                                                    if (!args) { return ""; }
+                                                    if ("sid" in args) { return "-" + args.sid; }
+                                                    const { brm } = args;
+                                                    if (!("d" in args)) {
+                                                        return "-" + brm[0];
+                                                    }
+                                                    return `-${brm[0]}-${args.d}${args.rel ? "-rel" : ""}`;
+                                                })()}`
+                                            }
+                                            if (command === "link") {
+                                                const [, arm, brm] = line;
+                                                return `l:${arm[0]}-${brm[0]}`
+                                            }
+                                            if (command === "unlink") {
+                                                const [, arm, brm] = line;
+                                                return `b:${arm[0]}-${brm[0]}`
+                                            }
+                                            return JSON.stringify(line);
+                                        })()}
+                                    </div>
+                                })}
+                            </div>
+                        })
+                    }
+                </div>
+            </div>
         </div>
+
     </div>
 }

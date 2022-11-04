@@ -1,0 +1,67 @@
+import { css, cx } from "@emotion/css";
+import { StateUpdater, useEffect, useState } from "preact/hooks";
+import { StopFill } from "@emotion-icons/bootstrap/StopFill";
+import { PlayFill } from "@emotion-icons/bootstrap/PlayFill";
+import { PauseFill } from "@emotion-icons/bootstrap/PauseFill";
+import { SkipEndFill } from "@emotion-icons/bootstrap/SkipEndFill";
+import { JSX } from "preact";
+
+
+export function PlaybackPanel({
+    stepState: [step, setStep], className, ...props
+}: {
+    stepState: [number, StateUpdater<number>];
+} & JSX.IntrinsicElements["div"]) {
+    const valueOrSelf = <T,>(x: T | JSX.SignalLike<T> | undefined) => x instanceof Object && "value" in x ? x.value : x;
+
+    const [autoplay, setAutoplay] = useState(false);
+
+    useEffect(() => {
+        if (!autoplay) { return; }
+        const handler = setInterval(() => setStep(step => step + 1), 500);
+        return () => clearInterval(handler);
+    }, [autoplay]);
+
+    return <div
+        className={cx(
+            css({
+                width: "fit-content",
+                height: "fit-content",
+            }),
+            valueOrSelf(className)
+        )}
+        {...props}
+    >
+        <button
+            className={cx(css({
+                width: "30px",
+                padding: "0px",
+            }))}
+            onClick={() => setStep(0)}
+        ><StopFill /></button>
+        <span
+            className={cx(css({
+                verticalAlign: "bottom",
+                fontSize: "26px",
+                padding: "0px 7px",
+                fontFamily: "monospace",
+            }))}>{step.toString().padStart(4, "\u00B7")}</span>
+        <button
+            className={cx(css({
+                width: "30px",
+                padding: "0px",
+            }))}
+            onClick={() => {
+                setAutoplay(false);
+                setStep(step + 1);
+            }}
+        ><SkipEndFill /></button>
+        <button
+            className={cx(css({
+                width: "30px",
+                padding: "0px",
+            }))}
+            onClick={() => setAutoplay(!autoplay)}
+        >{autoplay ? <PauseFill /> : <PlayFill />}</button>
+    </div>;
+}

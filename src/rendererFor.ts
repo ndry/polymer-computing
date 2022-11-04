@@ -32,8 +32,7 @@ export const rendererFor = memoizee(canvas => {
         })
     }();
 
-    const aspect = renderer.domElement.width / renderer.domElement.height;
-    const camera = new PerspectiveCamera(70, aspect, 0.01, 1000);
+    const camera = new PerspectiveCamera(70, 0.1, 0.01, 1000);
     camera.position.set(5, 15, 15);
     scene.add(camera);
     camera.add(scene.directionalLight);
@@ -47,7 +46,10 @@ export const rendererFor = memoizee(canvas => {
         camera,
         controls,
         render: (g: Object3D) => {
-
+            const r = canvas.getBoundingClientRect();
+            renderer.setSize(r.width, r.height, false);
+            camera.aspect = r.width / r.height;
+            camera.updateProjectionMatrix();
             controls.update();
             scene.add(g);
             renderer.render(scene, camera);
