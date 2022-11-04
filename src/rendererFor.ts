@@ -32,7 +32,7 @@ export const rendererFor = memoizee(canvas => {
         })
     }();
 
-    const camera = new PerspectiveCamera(70, 0.1, 0.01, 1000);
+    const camera = new PerspectiveCamera(40, 0.1, 0.01, 1000);
     camera.position.set(5, 15, 15);
     scene.add(camera);
     camera.add(scene.directionalLight);

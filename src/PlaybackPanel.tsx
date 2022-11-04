@@ -5,14 +5,13 @@ import { PlayFill } from "@emotion-icons/bootstrap/PlayFill";
 import { PauseFill } from "@emotion-icons/bootstrap/PauseFill";
 import { SkipEndFill } from "@emotion-icons/bootstrap/SkipEndFill";
 import { JSX } from "preact";
-
+import { signalValueOrSelf } from "./utils/signalValueOrSelf";
 
 export function PlaybackPanel({
     stepState: [step, setStep], className, ...props
 }: {
     stepState: [number, StateUpdater<number>];
 } & JSX.IntrinsicElements["div"]) {
-    const valueOrSelf = <T,>(x: T | JSX.SignalLike<T> | undefined) => x instanceof Object && "value" in x ? x.value : x;
 
     const [autoplay, setAutoplay] = useState(false);
 
@@ -28,7 +27,7 @@ export function PlaybackPanel({
                 width: "fit-content",
                 height: "fit-content",
             }),
-            valueOrSelf(className)
+            signalValueOrSelf(className),
         )}
         {...props}
     >

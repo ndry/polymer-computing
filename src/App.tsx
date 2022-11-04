@@ -14,6 +14,7 @@ import { sceneForWorld } from "./sceneForWorld";
 import { rendererFor } from "./rendererFor";
 
 import { PlaybackPanel } from "./PlaybackPanel";
+import { SourceLineEditor } from "./SourceLineEditor";
 
 export function App() {
     // const world = useRecoilValue(worldRecoil);
@@ -130,47 +131,17 @@ export function App() {
                                     whiteSpace: "nowrap",
                                 }))}
                             >
-                                {source.mainLoop.map((line, j) => {
-                                    return <div
-                                        className={cx(css({
-                                            width: 60,
+                                {source.mainLoop.map((line, j) => <SourceLineEditor
+                                    className={cx(
+                                        css({
+                                            width: 30,
                                             display: "inline-block",
-                                            margin: "5px",
-                                            background:
-                                            j === (step % solution.sources[i].mainLoop.length)
-                                                ? "yellow"
-                                                : "lightgrey",
-                                        }))}
-                                    >
-                                        {(() => {
-                                            const [command] = line;
-                                            if (command === "noop") {
-                                                return "-"
-                                            }
-                                            if (command === "grab") {
-                                                const [, arm, args] = line;
-                                                return `g:${arm[0]}${(() => {
-                                                    if (!args) { return ""; }
-                                                    if ("sid" in args) { return "-" + args.sid; }
-                                                    const { brm } = args;
-                                                    if (!("d" in args)) {
-                                                        return "-" + brm[0];
-                                                    }
-                                                    return `-${brm[0]}-${args.d}${args.rel ? "-rel" : ""}`;
-                                                })()}`
-                                            }
-                                            if (command === "link") {
-                                                const [, arm, brm] = line;
-                                                return `l:${arm[0]}-${brm[0]}`
-                                            }
-                                            if (command === "unlink") {
-                                                const [, arm, brm] = line;
-                                                return `b:${arm[0]}-${brm[0]}`
-                                            }
-                                            return JSON.stringify(line);
-                                        })()}
-                                    </div>
-                                })}
+                                            margin: "3px",
+                                            background: (j === step % solution.sources[i].mainLoop.length) ? "yellow" : "lightgrey",
+                                        })
+                                    )}
+                                    line={line}
+                                />)}
                             </div>
                         })
                     }
