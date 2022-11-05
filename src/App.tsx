@@ -9,7 +9,7 @@ import { fishSolution as solution } from "./hardcodedSolutions";
 
 import { PlaybackPanel } from "./PlaybackPanel";
 import { SourceLineEditor } from "./SourceLineEditor";
-import { MainScreen } from "./MainScreen";
+import { MainScene } from "./MainScene";
 import { Canvas } from "@react-three/fiber";
 
 export function App() {
@@ -48,7 +48,7 @@ export function App() {
                 position: [5, 15, 15],
             }}
         >
-            <MainScreen world={world} />
+            <MainScene world={world} />
         </Canvas>
         <div className={cx(css({
             position: "absolute",

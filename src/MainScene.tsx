@@ -1,6 +1,6 @@
 import { css, cx } from "@emotion/css";
 import { useEffect, useRef } from "react";
-import { DirectionalLight, Vector3 } from "three";
+import { DirectionalLight, Euler, Quaternion, Vector3 } from "three";
 import { physicsTick } from "./physics";
 import { World } from "./puzzle/terms";
 import { sceneForWorld } from "./sceneForWorld";
@@ -8,8 +8,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import "./utils/orbitControls";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-
-export function MainScreen({
+export function MainScene({
     world
 }: {
     world: World;
@@ -22,17 +21,17 @@ export function MainScreen({
     const cameraControlsRef = useRef<OrbitControls>(null);
 
     useFrame(({ camera }) => {
-        const light = lightRef.current;
-        if (!light) { return; }
-        light.position.set(5, -5, 0);
-        light.position.add(camera.position);
-    })
+        const light = lightRef.current!;
+
+        light.position.set(1, 1, 3);
+        camera.updateWorldMatrix(true, false);
+        light.position.applyQuaternion(camera.quaternion);
+    });
 
     useFrame(() => {
-        const controls = cameraControlsRef.current;
-        if (!controls) { return; }
+        const controls = cameraControlsRef.current!;
         controls.update();
-    })
+    });
 
     useEffect(() => {
         const { scene: scene1, links, bodies } = sceneForWorld(renderer, world);
@@ -58,7 +57,7 @@ export function MainScreen({
 
     return <>
         <directionalLight
-            intensity={0.4}
+            intensity={0.5}
             ref={lightRef}
         />
 
@@ -67,6 +66,6 @@ export function MainScreen({
             ref={cameraControlsRef}
         />
 
-        <ambientLight intensity={0.65} />
+        <ambientLight intensity={0.45} />
     </>;
 }
