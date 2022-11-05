@@ -3,6 +3,7 @@ import {
     MeshPhongMaterial,
     CylinderGeometry, SphereGeometry, IcosahedronGeometry,
     Group,
+    MeshBasicMaterial,
 } from "three";
 import { substanceColors } from "./substanceColors";
 import { mixAddTap } from "./utils/mixAddTap";
@@ -11,12 +12,21 @@ import { Upc, Xrm } from "./puzzle/terms";
 import memoizee from "memoizee";
 
 
-class Ball extends mixBody(Mesh) {
+class Ball extends mixBody(mixAddTap(Mesh)) {
     geometry = new SphereGeometry();
     material = new class extends MeshPhongMaterial {
-        shininess = 0;
+        shininess = 10000;
+        transparent = true;
+        opacity = 0.1;
     }();
     mass = 0.01;
+    innerBall = this.addTap(new Mesh(
+        new SphereGeometry(0.1),
+        new class extends MeshPhongMaterial {
+            shininess = 0;
+            emissiveIntensity = 0.6;
+        }()
+    ))
 }
 export const getOrCreateBallFromCache = memoizee((key: any, i: number) => {
     const ball = new Ball();
@@ -53,6 +63,8 @@ export const sceneForWorld = memoizee((cacheKey: any,
     const balls = world.upi.map((upc, i) => {
         const ball = scene.addTap(getOrCreateBallFromCache(cacheKey, i));
         ball.material.color.setStyle(substanceColors[upc.sid]);
+        ball.innerBall.material.color.setStyle(substanceColors[upc.sid]);
+        ball.innerBall.material.emissive.setStyle(substanceColors[upc.sid]);
         return ball;
     });
     balls[0].isKinematic = true;
@@ -65,9 +77,9 @@ export const sceneForWorld = memoizee((cacheKey: any,
         if (!existingLink) {
             const link = scene.addTap(new class extends Mesh {
                 geometry = new CylinderGeometry();
-                material = new class extends MeshPhongMaterial {
+                material = new class extends MeshBasicMaterial {
                     shininess = 0;
-                    color = new Color(0xffaaaa);
+                    color = new Color(0xffffff);
                 }();
                 body1 = ball;
                 body2 = ball2;
@@ -77,7 +89,7 @@ export const sceneForWorld = memoizee((cacheKey: any,
                     link.lookAt(link.body1.position);
                     link.rotateX(Math.PI / 2);
                     const d = link.body1.position.distanceTo(link.body2.position);
-                    link.scale.set(0.1, d - 2.5, 0.1);
+                    link.scale.set(0.01, d, 0.01);
                 };
                 k = 0.05;
             }());
@@ -110,7 +122,7 @@ export const sceneForWorld = memoizee((cacheKey: any,
                 this.lookAt(this.body1.position);
                 this.rotateX(Math.PI / 2);
                 const d = this.body1.position.distanceTo(this.body2.position);
-                this.scale.set(0.1, d, 0.1);
+                this.scale.set(0.03, d - 1, 0.03);
             }
             onBeforeRender = this.update.bind(this);
             k = 0.1;

@@ -46,7 +46,7 @@ export function App() {
                 fov: 40,
                 near: 0.1,
                 far: 1000,
-                position: [5, 15, 15],
+                position: [0, 30, 45],
             }}
         >
             <DefaultOrbitControls />

@@ -52,7 +52,7 @@ export function physicsTick({
             //     d, ball.mass * b.mass / (r * r * r));
 
             body.aggregatedForce.addScaledVector(
-                d, - 10 / (r * r * r * r));
+                d, - 1 / (r * r * r));
         }
     }
     for (const link of links) {
