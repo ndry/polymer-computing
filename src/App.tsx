@@ -10,6 +10,7 @@ import { fishSolution as solution } from "./hardcodedSolutions";
 import { PlaybackPanel } from "./PlaybackPanel";
 import { SourceLineEditor } from "./SourceLineEditor";
 import { MainScreen } from "./MainScreen";
+import { Canvas } from "@react-three/fiber";
 
 export function App() {
     // const world = useRecoilValue(worldRecoil);
@@ -22,7 +23,7 @@ export function App() {
     for (let i = 0; i < step; i++) {
         stepInPlace(solution, i, world);
     }
-    
+
     return <div className={cx(
         css`& {
             font-family: 'Bahnschrift', sans-serif;
@@ -33,15 +34,22 @@ export function App() {
         }
         `,
     )}>
-        <MainScreen
-            world={world}
+        <Canvas
             className={cx(css({
                 position: "absolute",
                 width: "100%",
                 height: "100%",
                 zIndex: -1,
             }))}
-        />
+            camera={{ 
+                fov: 40, 
+                near: 0.1, 
+                far: 1000, 
+                position: [5, 15, 15],
+            }}
+        >
+            <MainScreen world={world} />
+        </Canvas>
         <div className={cx(css({
             position: "absolute",
             bottom: 0,

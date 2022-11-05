@@ -21,6 +21,7 @@
 	background-color: #f4f1ff;
 	touch-action: manipulation;
 ">
+	<div id="root"></div>
 	<script type="module">
 		import { createRoot } from 'react-dom/client';
 		import { createElement } from 'react';
@@ -37,7 +38,7 @@
 				})()
 				: App;
 
-		createRoot(document.body).render(
+		createRoot(document.getElementById("root")).render(
 			createElement(RecoilRoot, null,
 				createElement(Component, null)
 			),

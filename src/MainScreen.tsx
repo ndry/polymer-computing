@@ -1,25 +1,41 @@
 import { css, cx } from "@emotion/css";
 import { useEffect, useRef } from "react";
-import { Vector3 } from "three";
+import { DirectionalLight, Vector3 } from "three";
 import { physicsTick } from "./physics";
 import { World } from "./puzzle/terms";
 import { sceneForWorld } from "./sceneForWorld";
-import { rendererFor } from "./rendererFor";
-import { Canvas, useFrame, ThreeElements } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
+import "./utils/orbitControls";
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 
 export function MainScreen({
-    world, className, ...props
+    world
 }: {
     world: World;
-} & Omit<JSX.IntrinsicElements["canvas"], "ref">) {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+}) {
+    const renderer = useThree(three => three.gl);
+    const scene = useThree(three => three.scene);
+    const camera = useThree(three => three.camera);
+
+    const lightRef = useRef<DirectionalLight>(null);
+    const cameraControlsRef = useRef<OrbitControls>(null);
+
+    useFrame(({ camera }) => {
+        const light = lightRef.current;
+        if (!light) { return; }
+        light.position.set(5, -5, 0);
+        light.position.add(camera.position);
+    })
+
+    useFrame(() => {
+        const controls = cameraControlsRef.current;
+        if (!controls) { return; }
+        controls.update();
+    })
 
     useEffect(() => {
-        if (!canvasRef.current) { return; }
-
-        const { render } = rendererFor(canvasRef.current);
-        const { scene, links, bodies } = sceneForWorld(render, world);
+        const { scene: scene1, links, bodies } = sceneForWorld(renderer, world);
         const gravity = new Vector3(0, -9.81, 0);
 
         let handler: number;
@@ -28,21 +44,29 @@ export function MainScreen({
             const dt = Math.min(0.1, (timeMs - lastTimeMs) / 1000);
 
             physicsTick({ dt, gravity, bodies, links });
-            render(scene);
+
+            scene.add(scene1);
+            renderer.render(scene, camera);
+            scene.remove(scene1);
 
             lastTimeMs = timeMs;
             handler = requestAnimationFrame(tick);
         };
         tick(performance.now());
         return () => cancelAnimationFrame(handler);
-    }, [canvasRef.current, world]);
+    }, [renderer, scene, camera, world]);
 
-    return <canvas
-        className={cx(
-            css({}),
-            className
-        )}
-        ref={canvasRef}
-        {...props}
-    ></canvas>;
+    return <>
+        <directionalLight
+            intensity={0.4}
+            ref={lightRef}
+        />
+
+        <orbitControls
+            args={[camera, renderer.domElement]}
+            ref={cameraControlsRef}
+        />
+
+        <ambientLight intensity={0.65} />
+    </>;
 }
