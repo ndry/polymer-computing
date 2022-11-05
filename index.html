@@ -22,7 +22,8 @@
 	touch-action: manipulation;
 ">
 	<script type="module">
-		import { render, h } from "preact";
+		import { createRoot } from 'react-dom/client';
+		import { createElement } from 'react';
 		import { RecoilRoot } from 'recoil';
 
 		import { App } from "./src/App";
@@ -36,10 +37,11 @@
 				})()
 				: App;
 
-		render(
-			h(RecoilRoot, {},
-				h(Component, {})),
-			document.body);
+		createRoot(document.body).render(
+			createElement(RecoilRoot, null,
+				createElement(Component, null)
+			),
+		);
 
 	</script>
 </body>

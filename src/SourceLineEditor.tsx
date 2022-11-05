@@ -1,7 +1,5 @@
 import { css, cx } from "@emotion/css";
 import { XrmSourceLine } from "./puzzle/terms";
-import { JSX } from "preact";
-import { signalValueOrSelf } from "./utils/signalValueOrSelf";
 
 import { HandRock } from "@emotion-icons/fa-solid/HandRock";
 import { Link } from "@emotion-icons/fa-solid/Link";
@@ -21,7 +19,7 @@ export function SourceLineEditor({
                 fontSize: "14px",
                 lineHeight: "14px",
             }),
-            signalValueOrSelf(className),
+            className,
         )}
         {...props}
     >{(() => {

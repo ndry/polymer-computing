@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import { viteSingleFile } from "vite-plugin-singlefile";
 import BuildInfo from 'vite-plugin-info';
-import preact from "@preact/preset-vite";
+import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { viteInlineLinkSvg } from "./vite-plugin-inlineLinkSvg";
 
@@ -9,15 +9,8 @@ export default defineConfig({
     build: {
         // minify: false,
     },
-    resolve: {
-        alias: {
-            'react': 'preact/compat',
-            'react-dom': 'preact/compat',
-        },
-    },
     plugins: [
-        preact({
-            devtoolsInProd: true,
+        react({
             babel: {
                 plugins: ["@emotion/babel-plugin"],
             },

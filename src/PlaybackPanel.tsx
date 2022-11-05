@@ -1,16 +1,14 @@
 import { css, cx } from "@emotion/css";
-import { StateUpdater, useEffect, useState } from "preact/hooks";
+import { useEffect, useState } from "react";
 import { StopFill } from "@emotion-icons/bootstrap/StopFill";
 import { PlayFill } from "@emotion-icons/bootstrap/PlayFill";
 import { PauseFill } from "@emotion-icons/bootstrap/PauseFill";
 import { SkipEndFill } from "@emotion-icons/bootstrap/SkipEndFill";
-import { JSX } from "preact";
-import { signalValueOrSelf } from "./utils/signalValueOrSelf";
 
 export function PlaybackPanel({
     stepState: [step, setStep], className, ...props
 }: {
-    stepState: [number, StateUpdater<number>];
+    stepState: [number, React.Dispatch<React.SetStateAction<number>>];
 } & JSX.IntrinsicElements["div"]) {
 
     const [autoplay, setAutoplay] = useState(false);
@@ -27,7 +25,7 @@ export function PlaybackPanel({
                 width: "fit-content",
                 height: "fit-content",
             }),
-            signalValueOrSelf(className),
+            className,
         )}
         {...props}
     >
