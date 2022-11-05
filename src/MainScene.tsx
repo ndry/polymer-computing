@@ -1,25 +1,18 @@
-import { css, cx } from "@emotion/css";
-import { useEffect, useRef } from "react";
-import { DirectionalLight, Euler, Quaternion, Vector3 } from "three";
+import { useRef } from "react";
+import { DirectionalLight, Group, Vector3 } from "three";
 import { physicsTick } from "./physics";
 import { World } from "./puzzle/terms";
 import { sceneForWorld } from "./sceneForWorld";
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import "./utils/orbitControls";
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
+const gravity = new Vector3(0, -9.81, 0);
 export function MainScene({
     world
 }: {
     world: World;
 }) {
-    const renderer = useThree(three => three.gl);
-    const scene = useThree(three => three.scene);
-    const camera = useThree(three => three.camera);
-
     const lightRef = useRef<DirectionalLight>(null);
-    const cameraControlsRef = useRef<OrbitControls>(null);
-
     useFrame(({ camera }) => {
         const light = lightRef.current!;
 
@@ -28,44 +21,22 @@ export function MainScene({
         light.position.applyQuaternion(camera.quaternion);
     });
 
-    useFrame(() => {
-        const controls = cameraControlsRef.current!;
-        controls.update();
-    });
+    const scene11Ref = useRef<Group>(null);
 
-    useEffect(() => {
+    useFrame(({ gl: renderer }, delta) => {
+        scene11Ref.current!.remove(...scene11Ref.current!.children);
+
         const { scene: scene1, links, bodies } = sceneForWorld(renderer, world);
-        const gravity = new Vector3(0, -9.81, 0);
 
-        let handler: number;
-        let lastTimeMs = performance.now();
-        const tick = (timeMs: number) => {
-            const dt = Math.min(0.1, (timeMs - lastTimeMs) / 1000);
+        physicsTick({ dt: delta, gravity, bodies, links });
 
-            physicsTick({ dt, gravity, bodies, links });
-
-            scene.add(scene1);
-            renderer.render(scene, camera);
-            scene.remove(scene1);
-
-            lastTimeMs = timeMs;
-            handler = requestAnimationFrame(tick);
-        };
-        tick(performance.now());
-        return () => cancelAnimationFrame(handler);
-    }, [renderer, scene, camera, world]);
+        scene11Ref.current!.add(scene1);
+    })
 
     return <>
-        <directionalLight
-            intensity={0.5}
-            ref={lightRef}
-        />
-
-        <orbitControls
-            args={[camera, renderer.domElement]}
-            ref={cameraControlsRef}
-        />
-
+        <directionalLight intensity={0.5} ref={lightRef} />
         <ambientLight intensity={0.45} />
+
+        <group ref={scene11Ref} />
     </>;
 }

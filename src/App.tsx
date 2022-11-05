@@ -11,6 +11,7 @@ import { PlaybackPanel } from "./PlaybackPanel";
 import { SourceLineEditor } from "./SourceLineEditor";
 import { MainScene } from "./MainScene";
 import { Canvas } from "@react-three/fiber";
+import { DefaultOrbitControls } from "./utils/DefaultOrbitControls";
 
 export function App() {
     // const world = useRecoilValue(worldRecoil);
@@ -41,13 +42,14 @@ export function App() {
                 height: "100%",
                 zIndex: -1,
             }))}
-            camera={{ 
-                fov: 40, 
-                near: 0.1, 
-                far: 1000, 
+            camera={{
+                fov: 40,
+                near: 0.1,
+                far: 1000,
                 position: [5, 15, 15],
             }}
         >
+            <DefaultOrbitControls />
             <MainScene world={world} />
         </Canvas>
         <div className={cx(css({

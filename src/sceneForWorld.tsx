@@ -43,11 +43,11 @@ export const getOrCreateXrmBodyFromCache = memoizee((key: any, i: number) => {
     max: 1000,
 });
 
-export function sceneForWorld(cacheKey: any,
+export const sceneForWorld = memoizee((cacheKey: any,
     world: {
         xrms: Xrm[];
         upi: Upc[];
-    }) {
+    }) => {
     const scene = new (mixAddTap(Group))();
 
     const balls = world.upi.map((upc, i) => {
@@ -132,4 +132,4 @@ export function sceneForWorld(cacheKey: any,
     return {
         scene, links, bodies
     };
-}
+});
