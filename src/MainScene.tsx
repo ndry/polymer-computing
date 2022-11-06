@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { DirectionalLight, Group, Material, MeshBasicMaterial, MeshPhongMaterial, OrthographicCamera, RGBFormat, Vector3, WebGLRenderTarget } from "three";
+import { DirectionalLight, Group, Material, MeshBasicMaterial, MeshPhongMaterial, OrthographicCamera, RGBAFormat, RGBFormat, Vector3, WebGLRenderTarget } from "three";
 import { physicsTick } from "./physics";
 import { World } from "./puzzle/terms";
 import { sceneForWorld } from "./sceneForWorld";
@@ -12,7 +12,7 @@ import { HorizontalBlurShader } from "three/examples/jsm/shaders/HorizontalBlurS
 import { VerticalBlurShader } from "three/examples/jsm/shaders/VerticalBlurShader";
 
 
-const b = new WebGLRenderTarget(1024, 1024, { format: RGBFormat });
+const b = new WebGLRenderTarget(1024, 1024, { format: RGBAFormat });
 const gravity = new Vector3(0, 10, 0);
 export function MainScene({
     world
@@ -110,12 +110,14 @@ export function MainScene({
             {
                 Array.from({ length: 5 }, (_, i) =>
                     <mesh
-                        rotation={[-Math.PI / 2, 0, 0]}
+                        key={i}
+                        rotation={[-Math.PI / 2, 0, Math.PI * -0.15]}
                         position={[0, i * 5, 0]}
                     >
-                        <torusGeometry args={[floorRadius * (0.95 - i * .03), 0.2, 4, 150, Math.PI]} />
+                        <torusGeometry args={[floorRadius * (0.95 - i * .05), 0.2, 4, 150, Math.PI * 1.3]} />
                         <meshPhongMaterial
-                            emissive={"pink"}
+                            color={"#bfa0ff"}
+                            emissive={"#bfa0ff"}
                             emissiveIntensity={1}
                         />
                     </mesh>)
