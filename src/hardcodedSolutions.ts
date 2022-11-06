@@ -23,6 +23,27 @@ export const tetrahedron: Solution = {
     }],
 }
 
+export const newTetrahedron: Solution = {
+    problem: undefined,
+    sources: [{
+        entryPoint: [
+        ],
+        mainLoop: [
+            ["grab", "brm", { sid: 1 }],
+            ["grab", "crm", { sid: 2 }],
+            ["link", "brm", "crm"],
+            ["link", "brm", "arm"],
+            ["link", "arm", "crm"],
+            ["grab", "arm", { sid: 4 }],
+            ["link", "arm", "crm"],
+            ["link", "arm", "brm"],
+            ["grab", "crm", { brm: "crm", d: 1, rel: false }],
+            ["link", "arm", "crm"],
+            ["grab", "arm", { sid: 0 }],
+        ]
+    }],
+}
+
 export const fishSolution: Solution = {
     problem: undefined,
     sources: [{
