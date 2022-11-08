@@ -66,7 +66,7 @@ export function physicsTick({
     }
     for (const ball of bodies) {
         ball.aggregatedForce.addScaledVector(
-            ball.velocity, -ball.velocity.length() * 0.1)
+            ball.velocity, -ball.velocity.length() * 0.02)
     }
     for (const ball of bodies) {
         if (ball.isKinematic) { continue; }

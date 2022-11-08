@@ -93,13 +93,13 @@ export const sceneForWorld = memoizee((cacheKey: any,
                 };
                 k = 0.05;
             }());
+            link.onBeforeRender();
             links.push(link);
         }
     };
 
     for (let i = 0; i < balls.length; i++) {
         const upc = world.upi[i];
-        const ball = balls[i];
         for (const link of upc.links) {
             ensureLink(
                 balls[world.upi.indexOf(link[0])],
@@ -127,6 +127,7 @@ export const sceneForWorld = memoizee((cacheKey: any,
             onBeforeRender = this.update.bind(this);
             k = 0.1;
         }());
+        link.onBeforeRender();
         links.push(link);
     }
 

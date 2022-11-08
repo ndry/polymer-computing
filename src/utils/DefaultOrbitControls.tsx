@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import "./declareOrbitControls";
 
 
 export function DefaultOrbitControls() {
