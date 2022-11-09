@@ -11,98 +11,131 @@ export function SourceLineEditor({
 }: {
     line: XrmSourceLine,
 } & JSX.IntrinsicElements["div"]) {
+    const [command] = line;
+    const arm = line[1];
+    const brm = (() => {
+        if (command === "noop") { return; }
+        if (command === "grab") {
+            const [, , args] = line;
+            if (!args) { return; }
+            if ("sid" in args) { return; }
+            return args.brm;
+        }
+        if (command === "link") { return line[2]; }
+        if (command === "unlink") { return line[2]; }
+    })();
+
+    const Icon = {
+        "noop": Ban,
+        "grab": HandRock,
+        "link": Link,
+        "unlink": Unlink,
+    }[command];
+
     return <div
         className={cx(
             css({
                 position: "relative",
-                padding: "0px",
-                fontSize: "14px",
-                lineHeight: "14px",
+                margin: "0 -0.09vh",
+                fontSize: "1.5vh",
+                width: "5vh",
+                height: "3vh",
             }),
             className,
         )}
         {...props}
-    >{(() => {
-        const [command] = line;
-        if (command === "noop") {
-            return <>
-                <Ban className={cx(css({
-                    opacity: 0.1,
-                }))} />
-                <div className={cx(css({
+    >
+        <div
+            className={cx(
+                css({
                     position: "absolute",
-                    top: 2,
-                    left: 2,
-                }))}>
-                    <Ban className={cx(css({
-                        height: 15,
-                    }))} />
-                </div>
-            </>;
-        }
-        if (command === "grab") {
-            const [, arm, args] = line;
-            return <>
-                <HandRock className={cx(css({
-                    opacity: 0.1,
-                }))} />
-                <div className={cx(css({
+                    color: "#efcfff",
+                    borderRadius: "50%",
+                    width: "60%",
+                    height: "94%",
+                    left: "20%",
+                    textAlign: "center",
+                    fontSize: "100%",
+                    lineHeight: "200%",
+                }),
+            )}
+        >
+            <Icon className={cx(
+                css({
                     position: "absolute",
-                    top: 2,
-                    left: 2,
+                    height: "100%",
+                    width: "100%",
+                    left: 0,
+                    top: 0,
+                    scale: "-1 1",
+                }),
+                css`& * {
+                    stroke: #0a000d;
+                    stroke-width: 4%;
+                }`,
+            )} />
+            {(() => {
+                if (command !== "grab") { return; }
+                const [, , args] = line;
+                return <div className={cx(css({
+                    position: "absolute",
+                    height: "100%",
+                    width: "100%",
+                    lineHeight: "210%",
+                    left: "-5%",
+                    top: "2%",
+                    color: "#0a000d",
+                    textAlign: "center",
                 }))}>
-                    <HandRock className={cx(css({
-                        height: 15,
-                    }))} />
-                    {arm[0]}<br />
                     {(() => {
                         if (!args) { return; }
                         if ("sid" in args) { return "s" + args.sid; }
                         const { brm } = args;
-                        if (!("d" in args)) { return brm[0]; }
-                        return `${brm[0]}-${args.d}${args.rel ? "-rel" : ""}`;
+                        if (!("d" in args)) { return ; }
+                        return `${args.d}${args.rel ? "*" : ""}-`;
                     })()}
-                </div>
-            </>;
-        }
-        if (command === "link") {
-            const [, arm, brm] = line;
-            return <>
-                <Link className={cx(css({
-                    opacity: 0.1,
-                }))} />
-                <div className={cx(css({
+                </div>;
+            })()}
+        </div>
+        {arm && <div
+            className={cx(
+                css({
                     position: "absolute",
-                    top: 2,
-                    left: 2,
-                }))}>
-                    <Link className={cx(css({
-                        height: 15,
-                    }))} />
-                    {arm[0]}<br />
-                    {brm[0]}
-                </div>
-            </>;
-        }
-        if (command === "unlink") {
-            const [, arm, brm] = line;
-            return <>
-                <Unlink className={cx(css({
-                    opacity: 0.1,
-                }))} />
-                <div className={cx(css({
+                    left: 0,
+                    top: 0,
+                    background: "#efcfff",
+                    color: "#0a000d",
+                    border: "#0a000d 0.01vh solid",
+                    borderRadius: "50%",
+                    width: "24%",
+                    height: "41%",
+                    margin: "0px",
+                    textAlign: "center",
+                    fontSize: "100%",
+                    lineHeight: "80%",
+                    fontWeight: "bold",
+                }),
+            )}
+        >{arm?.[0] ?? "-"}</div>}
+        {brm && <div
+            className={cx(
+                css({
                     position: "absolute",
-                    top: 2,
-                    left: 2,
-                }))}>
-                    <Unlink className={cx(css({
-                        height: 15,
-                    }))} />
-                    {arm[0]}<br />
-                    {brm[0]}
-                </div>
-            </>;
-        }
-        return JSON.stringify(line);
-    })()}</div>;
+                    right: 0,
+                    bottom: 0,
+                    background: "#efcfff",
+                    color: "#0a000d",
+                    border: "#0a000d 0.01vh solid",
+                    borderRadius: "50%",
+                    width: "24%",
+                    height: "41%",
+                    margin: "0px",
+                    textAlign: "center",
+                    fontSize: "100%",
+                    lineHeight: "80%",
+                    fontWeight: "bold",
+                }),
+            )}
+        >{brm?.[0] ?? "-"}</div>}
+    </div>;
 }

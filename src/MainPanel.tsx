@@ -72,15 +72,16 @@ export function MainPanel({
                 <div
                     className={cx(css({
                         overflow: "scroll",
+                        padding: "0 10px",
+                        margin: 0,
                     }))}
                 >
                     {solution.sources.map((source, i) => {
                         return <div
                             key={i}
                             className={cx(css({
-                                margin: "5px",
-                                background: "grey",
-                                whiteSpace: "nowrap",
+                                display: "flex",
+                                flexDirection: "row",
                                 width: "fit-content",
                             }))}
                         >
@@ -88,10 +89,9 @@ export function MainPanel({
                                 key={j}
                                 className={cx(
                                     css({
-                                        width: 30,
-                                        display: "inline-block",
-                                        margin: "3px",
-                                        background: (j === step % solution.sources[i].mainLoop.length) ? "yellow" : "lightgrey",
+                                        background: (j === step % solution.sources[i].mainLoop.length)
+                                            ? "linear-gradient(to right, transparent, #efcfff 5%, #efcfff 10%, #efcfff80 20%, transparent)"
+                                            : undefined,
                                     })
                                 )}
                                 line={line} />)}
