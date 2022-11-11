@@ -21,8 +21,7 @@ export function MainPanel({
             css({
                 position: "absolute",
                 bottom: 0,
-                width: "90%",
-                pointerEvents: "none",
+                width: "100%",
             }),
             className
         )}

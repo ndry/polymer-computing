@@ -36,17 +36,12 @@ export function App() {
         }
         `,
     )}>
-        <SidePanel />
         <div className={cx(css({
-            height: "100%",
-            width: "100%",
+            position: "absolute",
+            inset: 0,
+            zIndex: -1,
         }))}>
             <Canvas
-                className={cx(css({
-                    position: "absolute",
-                    width: "100%",
-                    height: "100%",
-                }))}
                 camera={{
                     fov: 40,
                     near: 0.1,
@@ -57,6 +52,13 @@ export function App() {
                 <DefaultOrbitControls />
                 <MainScene world={world} />
             </Canvas>
+        </div>
+        <SidePanel />
+        <div className={cx(css({
+            position: "relative",
+            flexGrow: 1,
+            pointerEvents: "none",
+        }))}>
             <MainPanel stepState={stepState} />
         </div>
 

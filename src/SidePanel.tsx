@@ -4,7 +4,7 @@ export function SidePanel() {
     return <div className={cx(css({
         height: "100%",
         width: "242px",
-        background: "teal",
+        background: "#008081a0",
         border: "solid",
         borderColor: "blue",
     }))}>
