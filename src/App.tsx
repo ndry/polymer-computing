@@ -53,13 +53,33 @@ export function App() {
                 <MainScene world={world} />
             </Canvas>
         </div>
-        <SidePanel />
+        <SidePanel className={cx(css({
+            flexBasis: "242px",
+            flexShrink: "0",
+        }))} />
         <div className={cx(css({
-            position: "relative",
-            flexGrow: 1,
+            flex: "auto",
             pointerEvents: "none",
+            position: "relative",
         }))}>
-            <MainPanel stepState={stepState} />
+            <div className={cx(css({
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                flexDirection: "column",
+            }))}>
+                <div className={cx(css({
+                    flex: "auto",
+                }))}>
+                    { /* more on screen panels here */}
+                </div>
+                <MainPanel
+                    className={cx(css({
+                        height: "242px",
+                    }))}
+                    stepState={stepState}
+                />
+            </div>
         </div>
 
     </div>

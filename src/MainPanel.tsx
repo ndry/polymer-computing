@@ -19,34 +19,28 @@ export function MainPanel({
     return <div
         className={cx(
             css({
-                position: "absolute",
-                bottom: 0,
-                width: "100%",
+                position: "relative",
             }),
-            className
+            className,
         )}
         {...props}
     >
         <MainPanelNodedBackground className={cx(css({
             position: "absolute",
             width: "100%",
-            height: "242px",
-            bottom: 0,
+            height: "100%",
         }))} />
-        <div className={cx(css({
-            position: "relative",
-        }))}>
+        <div>
             <PlaybackPanel
                 stepState={stepState}
                 className={cx(css({
-                    position: "absolute",
-                    margin: "0 0 0 90px",
+                    margin: "21px 0 0 90px",
                     color: "#efcfff",
                     bottom: 0,
                     pointerEvents: "all",
                 }))} />
             <div className={cx(css({
-                position: "absolute",
+                margin: "-40px 10px 0 0",
                 textAlign: "right",
                 lineHeight: "0.8rem",
                 fontSize: "18px",
@@ -61,27 +55,18 @@ export function MainPanel({
             </div>
         </div>
         <div className={cx(css({
-            height: 190,
             pointerEvents: "all",
-            position: "relative",
+            padding: "40px 27px 30px 34px",
         }))}>
             <div
                 className={cx(css({
-                    padding: "20px 30px 30px 30px",
+                    overflow: "scroll",
                 }))}
             >
-                <div
-                    className={cx(css({
-                        overflow: "scroll",
-                        padding: "0 10px",
-                        margin: 0,
-                    }))}
-                >
-                    <ProgramEditor 
-                        solutionState={solutionState}
-                        step={step}
-                    />
-                </div>
+                <ProgramEditor
+                    solutionState={solutionState}
+                    step={step}
+                />
             </div>
         </div>
     </div>;

@@ -21,23 +21,28 @@ export function ProgramEditor({
                     display: "flex",
                     flexDirection: "row",
                     width: "fit-content",
-                    paddingBottom: 20,
                 }))}
             >
                 {source.mainLoop.map((command, j) => {
                     const len = solution.sources[i].mainLoop.length;
                     const isNext = (j === step % len);
                     const isPrev = ((j + 1) % len === step % len);
-                    return <CommandEditor
+                    return <div
                         key={j}
+                        className={cx(
+                            css({
+                                padding: "0.3vh 0",
+                                background: isNext ? "linear-gradient(to right, #efcfff 8%, #efcfffd0 12%, #efcfff80 30%, transparent 60%)"
+                                    : isPrev ? "linear-gradient(to left, #efcfff 8%, #efcfffd0 12%, #efcfff80 30%, transparent 60%)"
+                                        : undefined,
+                            })
+                        )}
+                    ><CommandEditor
                         className={cx(
                             css({
                                 fontSize: "1.5vh",
                                 margin: "0 -0.09vh",
                                 height: "3vh",
-                                background: isNext ? "linear-gradient(to right, #efcfff 8%, #efcfffd0 12%, #efcfff80 30%, transparent 60%)"
-                                    : isPrev ? "linear-gradient(to left, #efcfff 8%, #efcfffd0 12%, #efcfff80 30%, transparent 60%)"
-                                        : undefined,
                             })
                         )}
                         commandState={[
@@ -45,7 +50,8 @@ export function ProgramEditor({
                             nextCommand => setSolution(solution => update(solution, {
                                 sources: { [i]: { mainLoop: { [j]: { $set: nextCommand } } } }
                             }))
-                        ]} />;
+                        ]} />
+                    </div>;
                 })}
             </div>;
         })}
