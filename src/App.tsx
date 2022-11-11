@@ -10,6 +10,7 @@ import { MainScene } from "./MainScene";
 import { Canvas } from "@react-three/fiber";
 import { DefaultOrbitControls } from "./utils/DefaultOrbitControls";
 import { MainPanel } from "./MainPanel";
+import { SidePanel } from "./SidePanel";
 
 export function App() {
     // const world = useRecoilValue(worldRecoil);
@@ -33,24 +34,29 @@ export function App() {
         }
         `,
     )}>
-        <Canvas
-            className={cx(css({
-                position: "absolute",
-                width: "100%",
-                height: "100%",
-                zIndex: -1,
-            }))}
-            camera={{
-                fov: 40,
-                near: 0.1,
-                far: 1000,
-                position: [0, 30, 45],
-            }}
-        >
-            <DefaultOrbitControls />
-            <MainScene world={world} />
-        </Canvas>
-        <MainPanel stepState={stepState} />
+        <SidePanel />
+        <div className={cx(css({
+            height: "100%",
+            width: "100%",
+        }))}>
+            <Canvas
+                className={cx(css({
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                }))}
+                camera={{
+                    fov: 40,
+                    near: 0.1,
+                    far: 1000,
+                    position: [0, 30, 45],
+                }}
+            >
+                <DefaultOrbitControls />
+                <MainScene world={world} />
+            </Canvas>
+            <MainPanel stepState={stepState} />
+        </div>
 
     </div>
 }
