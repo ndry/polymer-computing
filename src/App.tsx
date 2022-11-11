@@ -10,6 +10,7 @@ import { MainScene } from "./MainScene";
 import { Canvas } from "@react-three/fiber";
 import { DefaultOrbitControls } from "./utils/DefaultOrbitControls";
 import { MainPanel } from "./MainPanel";
+import { SidePanel } from "./SidePanel";
 
 export function App() {
     // const world = useRecoilValue(worldRecoil);
@@ -33,13 +34,7 @@ export function App() {
         }
         `,
     )}>
-        <div className={cx(css({
-            height: "100%",
-            width: "242px",
-            background: "teal",
-            border: "solid",
-            borderColor: "blue",
-        }))} />
+        <SidePanel />
         <div className={cx(css({
             height: "100%",
             width: "100%",
