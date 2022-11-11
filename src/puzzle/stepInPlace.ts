@@ -27,27 +27,11 @@ export function stepInPlace(
 
         switch (command) {
             case "grab": {
-                const [, armKey, args] = line;
+                const [, armKey, brmKey, args] = line;
                 const arm = xrm[armKey];
-                if (!args) {
-                    arm.ox = undefined;
-                    arm.from = undefined;
-                    break;
-                }
+                const brm = xrm[brmKey];
 
-                if (!("brm" in args)) {
-                    const upc: Upc = {
-                        sid: args.sid,
-                        links: [],
-                    };
-                    world.upi.push(upc);
-                    arm.ox = upc;
-                    arm.from = undefined;
-                    break;
-                }
-
-                const brm = xrm[args.brm];
-                if ("d" in args) {
+                if (args) {
                     if (!brm.ox) { throw "not possible"; }
                     const d = args.d * brm.flip;
                     let base = 0;
@@ -62,6 +46,28 @@ export function stepInPlace(
                     arm.ox = brm.ox;
                     arm.from = brm.from;
                 }
+                break;
+            }
+            case "catch": {
+                const [, armKey, sid] = line;
+                const arm = xrm[armKey];
+
+                const upc: Upc = {
+                    sid,
+                    links: [],
+                };
+                world.upi.push(upc);
+                arm.ox = upc;
+                arm.from = undefined;
+
+                break;
+            }
+            case "loose": {
+                const [, armKey] = line;
+                const arm = xrm[armKey];
+                arm.ox = undefined;
+                arm.from = undefined;
+
                 break;
             }
             case "link": {
@@ -84,6 +90,7 @@ export function stepInPlace(
                 };
                 arm.ox.links.push(link);
                 brm.ox.links.push(link);
+
                 break;
             }
             case "unlink": {

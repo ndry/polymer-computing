@@ -1,9 +1,10 @@
 import { css, cx } from "@emotion/css";
 import { appVersion } from "./appVersion";
-import { fishSolution as solution } from "./hardcodedSolutions";
 import { MainPanelNodedBackground } from "./MainPanelNodedBackground";
 import { PlaybackPanel } from "./PlaybackPanel";
-import { SourceLineEditor } from "./SourceLineEditor";
+import { useRecoilState } from "recoil";
+import { solutionRecoil } from "./solutionRecoil";
+import { ProgramEditor } from "./ProgramEditor";
 
 
 export function MainPanel({
@@ -12,6 +13,8 @@ export function MainPanel({
     stepState: [number, React.Dispatch<React.SetStateAction<number>>];
 } & JSX.IntrinsicElements["div"]) {
     const [step] = stepState;
+
+    const solutionState = useRecoilState(solutionRecoil);
 
     return <div
         className={cx(
@@ -76,27 +79,10 @@ export function MainPanel({
                         margin: 0,
                     }))}
                 >
-                    {solution.sources.map((source, i) => {
-                        return <div
-                            key={i}
-                            className={cx(css({
-                                display: "flex",
-                                flexDirection: "row",
-                                width: "fit-content",
-                            }))}
-                        >
-                            {source.mainLoop.map((line, j) => <SourceLineEditor
-                                key={j}
-                                className={cx(
-                                    css({
-                                        background: (j === step % solution.sources[i].mainLoop.length)
-                                            ? "linear-gradient(to right, transparent, #efcfff 5%, #efcfff 10%, #efcfff80 20%, transparent)"
-                                            : undefined,
-                                    })
-                                )}
-                                line={line} />)}
-                        </div>;
-                    })}
+                    <ProgramEditor 
+                        solutionState={solutionState}
+                        step={step}
+                    />
                 </div>
             </div>
         </div>

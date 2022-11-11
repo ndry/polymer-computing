@@ -2,12 +2,10 @@ export type SubstanceId = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export type XrmArmKey = "arm" | "brm" | "crm";
 
-export type XrmSourceLine =
-    ["grab", XrmArmKey,
-        undefined
-        | { sid: SubstanceId }
-        | { brm: XrmArmKey }
-        | { brm: XrmArmKey, d: number, rel: boolean }]
+export type XrmCommand =
+    ["grab", XrmArmKey, XrmArmKey, { d: number, rel?: boolean }?]
+    | ["catch", XrmArmKey, SubstanceId]
+    | ["loose", XrmArmKey]
     // | ["rotate", XrmArmKey, number]
     // | ["flip", XrmArmKey, number]
     | ["link", XrmArmKey, XrmArmKey]
@@ -42,8 +40,8 @@ export type Upc = {
 export type Solution = {
     problem: undefined,
     sources: Array<{
-        entryPoint: XrmSourceLine[],
-        mainLoop: XrmSourceLine[],
+        entryPoint: XrmCommand[],
+        mainLoop: XrmCommand[],
     }>,
 }
 

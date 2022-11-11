@@ -4,14 +4,16 @@ import { css, cx } from "@emotion/css";
 import { useState } from "react";
 import { stepInPlace } from "./puzzle/stepInPlace";
 import { initialWorld } from "./puzzle/terms";
-import { fishSolution as solution } from "./hardcodedSolutions";
 
 import { MainScene } from "./MainScene";
 import { Canvas } from "@react-three/fiber";
 import { DefaultOrbitControls } from "./utils/DefaultOrbitControls";
 import { MainPanel } from "./MainPanel";
+import { useRecoilValue } from "recoil";
+import { solutionRecoil } from "./solutionRecoil";
 
 export function App() {
+    const solution = useRecoilValue(solutionRecoil);
     // const world = useRecoilValue(worldRecoil);
 
     const stepState = useState(0);
