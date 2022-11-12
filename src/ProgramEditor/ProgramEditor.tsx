@@ -4,6 +4,56 @@ import update from "immutability-helper";
 import { Solution } from "../puzzle/terms";
 import { Dispatch, SetStateAction } from "react";
 
+function ensureSolutionEditability(solution: Solution) {
+    let botsNeeded = 1;
+    for (let i = solution.sources.length - 1; i >= 0; i--) {
+        if (solution.sources[i].mainLoop.some(s => s[0] !== "noop")) {
+            botsNeeded = i + 1;
+            break;
+        }
+    }
+    solution = update(solution, {
+        sources: { $splice: [[botsNeeded + 1]] }
+    });
+    while (solution.sources.length < botsNeeded + 1) {
+        solution = update(solution, {
+            sources: {
+                $push: [{
+                    entryPoint: [],
+                    mainLoop: [],
+                }]
+            }
+        });
+    }
+
+    const lengthNeeded = Math.max(
+        ...solution.sources.map(s => {
+            for (let i = s.mainLoop.length - 1; i >= 0; i--) {
+                if (s.mainLoop[i][0] !== "noop") {
+                    return i + 1;
+                }
+            }
+            return 1;
+        }));
+
+    for (let i = 0; i < solution.sources.length; i++) {
+        solution = update(solution, {
+            sources: {
+                [i]: { mainLoop: { $splice: [[lengthNeeded + 1]] } }
+            }
+        });
+        while (solution.sources[i].mainLoop.length < lengthNeeded + 1) {
+            solution = update(solution, {
+                sources: {
+                    [i]: { mainLoop: { $push: [["noop"]] } }
+                }
+            });
+        }
+    }
+
+    return solution;
+}
+
 
 type State<T> = [T, Dispatch<SetStateAction<T>>];
 
@@ -13,8 +63,11 @@ export function ProgramEditor({
     solutionState: State<Solution>;
     step: number;
 }) {
+    const _solution = ensureSolutionEditability(solution);
+    const _setSolution = (nextSolution: Solution) =>
+        setSolution(ensureSolutionEditability(nextSolution));
     return <>
-        {solution.sources.map((source, i) => {
+        {_solution.sources.map((source, i) => {
             return <div
                 key={i}
                 className={cx(css({
@@ -24,7 +77,7 @@ export function ProgramEditor({
                 }))}
             >
                 {source.mainLoop.map((command, j) => {
-                    const len = solution.sources[i].mainLoop.length;
+                    const len = _solution.sources[i].mainLoop.length;
                     const isNext = (j === step % len);
                     const isPrev = ((j + 1) % len === step % len);
                     return <div
@@ -47,7 +100,7 @@ export function ProgramEditor({
                         )}
                         commandState={[
                             command,
-                            nextCommand => setSolution(solution => update(solution, {
+                            nextCommand => _setSolution(update(_solution, {
                                 sources: { [i]: { mainLoop: { [j]: { $set: nextCommand } } } }
                             }))
                         ]} />

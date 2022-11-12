@@ -1,5 +1,5 @@
 import {
-    Mesh, Color, 
+    Mesh, Color,
     MeshPhongMaterial,
     CylinderGeometry, SphereGeometry, IcosahedronGeometry,
     Group,
@@ -8,7 +8,7 @@ import {
 import { substanceColors } from "./substanceColors";
 import { mixAddTap } from "./utils/mixAddTap";
 import { mixBody, PhysicsBody, PhysicsLink } from "./physics";
-import { Upc, Xrm } from "./puzzle/terms";
+import { Upc, World, Xrm } from "./puzzle/terms";
 import memoizee from "memoizee";
 
 
@@ -53,11 +53,7 @@ export const getOrCreateXrmBodyFromCache = memoizee((key: any, i: number) => {
     max: 1000,
 });
 
-export const sceneForWorld = memoizee((cacheKey: any,
-    world: {
-        xrms: Xrm[];
-        upi: Upc[];
-    }) => {
+export const sceneForWorld = memoizee((cacheKey: any, world: World) => {
     const scene = new (mixAddTap(Group))();
 
     const balls = world.upi.map((upc, i) => {
@@ -131,13 +127,15 @@ export const sceneForWorld = memoizee((cacheKey: any,
         links.push(link);
     }
 
-    const xrms = world.xrms.map((xrm, i) => {
-        const x = scene.addTap(getOrCreateXrmBodyFromCache(cacheKey, i));
-        if (xrm.arm.ox) { addXrmLink(x, balls[world.upi.indexOf(xrm.arm.ox)]); }
-        if (xrm.brm.ox) { addXrmLink(x, balls[world.upi.indexOf(xrm.brm.ox)]); }
-        if (xrm.crm.ox) { addXrmLink(x, balls[world.upi.indexOf(xrm.crm.ox)]); }
-        return x;
-    });
+    const xrms = world.xrms
+        .filter((xrm): xrm is Xrm => !!xrm)
+        .map((xrm, i) => {
+            const x = scene.addTap(getOrCreateXrmBodyFromCache(cacheKey, i));
+            if (xrm.arm.ox) { addXrmLink(x, balls[world.upi.indexOf(xrm.arm.ox)]); }
+            if (xrm.brm.ox) { addXrmLink(x, balls[world.upi.indexOf(xrm.brm.ox)]); }
+            if (xrm.crm.ox) { addXrmLink(x, balls[world.upi.indexOf(xrm.crm.ox)]); }
+            return x;
+        });
 
 
     const bodies = [...balls, ...xrms];

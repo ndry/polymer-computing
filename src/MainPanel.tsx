@@ -56,17 +56,27 @@ export function MainPanel({
         </div>
         <div className={cx(css({
             pointerEvents: "all",
-            padding: "40px 27px 30px 34px",
+            padding: "40px 27px 30px 38px",
+            height: "130px",
         }))}>
-            <div
-                className={cx(css({
-                    overflow: "scroll",
-                }))}
-            >
-                <ProgramEditor
-                    solutionState={solutionState}
-                    step={step}
-                />
+            <div className={cx(css({
+                position: "relative",
+                height: "100%",
+                width: "100%",
+            }))}>
+                <div
+                    className={cx(css({
+                        position: "absolute",
+                        height: "100%",
+                        width: "100%",
+                        overflow: "scroll",
+                    }))}
+                >
+                    <ProgramEditor
+                        solutionState={solutionState}
+                        step={step}
+                    />
+                </div>
             </div>
         </div>
     </div>;

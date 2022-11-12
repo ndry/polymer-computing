@@ -46,7 +46,7 @@ export type Solution = {
 }
 
 export type World = {
-    xrms: Xrm[];
+    xrms: (Xrm | undefined)[];
     upi: Upc[];
 }
 
@@ -56,23 +56,28 @@ export const initialWorld = (s: Solution) => {
         links: [],
     };
     return ({
-        xrms: s.sources.map(() => ({
-            arm: {
-                ox: initialUpc,
-                from: undefined,
-                flip: 1,
-            },
-            brm: {
-                ox: initialUpc,
-                from: undefined,
-                flip: 1,
-            },
-            crm: {
-                ox: initialUpc,
-                from: undefined,
-                flip: 1,
-            },
-        } as Xrm)),
+        xrms: s.sources.map(s => {
+            if (s.mainLoop.every(c => c[0] === "noop")) {
+                return undefined;
+            }
+            return ({
+                arm: {
+                    ox: initialUpc,
+                    from: undefined,
+                    flip: 1,
+                },
+                brm: {
+                    ox: initialUpc,
+                    from: undefined,
+                    flip: 1,
+                },
+                crm: {
+                    ox: initialUpc,
+                    from: undefined,
+                    flip: 1,
+                },
+            } as Xrm);
+        }),
         upi: [initialUpc] as Upc[]
     });
 }

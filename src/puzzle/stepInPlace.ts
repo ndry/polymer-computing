@@ -5,12 +5,13 @@ export function stepInPlace(
     s: Solution,
     step: number,
     world: {
-        xrms: Xrm[];
+        xrms: (Xrm | undefined)[];
         upi: Upc[];
     }
 ) {
     for (let j = 0; j < world.xrms.length; j++) {
         const xrm = world.xrms[j];
+        if (!xrm) { continue; }
         const source = s.sources[j];
         const line = step < source.entryPoint.length
             ? source.entryPoint[step]
@@ -116,6 +117,7 @@ export function stepInPlace(
     }
 
     for (const xrm of world.xrms) {
+        if (!xrm) { continue; }
         for (const arm of [xrm.arm, xrm.brm, xrm.crm]) {
             const linkBroken = arm.from && arm.ox.links.indexOf(arm.from) < 0;
             if (linkBroken) {

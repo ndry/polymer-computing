@@ -1,5 +1,17 @@
 import { Solution } from "./puzzle/terms";
 
+export const shortTestSolution: Solution = {
+    problem: undefined,
+    sources: [{
+        entryPoint: [],
+        mainLoop: [
+            ["catch", "brm", 1],
+            ["catch", "crm", 2],
+            ["link", "brm", "crm"],
+        ],
+    }]
+}
+
 export const tetrahedron: Solution = {
     problem: undefined,
     sources: [{
