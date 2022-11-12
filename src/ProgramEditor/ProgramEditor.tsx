@@ -2,7 +2,7 @@ import { css, cx } from "@emotion/css";
 import { CommandEditor } from "./CommandEditor";
 import update from "immutability-helper";
 import { Solution } from "../puzzle/terms";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 function ensureSolutionEditability(solution: Solution) {
     let botsNeeded = 1;
@@ -66,7 +66,38 @@ export function ProgramEditor({
     const _solution = ensureSolutionEditability(solution);
     const _setSolution = (nextSolution: Solution) =>
         setSolution(ensureSolutionEditability(nextSolution));
+
+    const [showJsonEditor, setShowJsonEditor] = useState(false);
+    const [json, setJson] = useState(_solution as Solution | undefined);
     return <>
+        {showJsonEditor && <div className={cx(css({
+            position: "fixed",
+            inset: 200,
+        }))}
+        >
+            <textarea
+                value={JSON.stringify(json, undefined, 4)}
+                className={cx(css({
+                    width: "100%",
+                    height: "90%",
+                }))}
+                onInput={(ev) => {
+                    const v = (ev.target as HTMLTextAreaElement).value;
+                    try {
+                        setJson(JSON.parse(v));
+                    } catch {
+                        setJson(undefined);
+                    }
+                }}
+            />
+            <button
+                disabled={!json}
+                onClick={() => {
+                    _setSolution(json!)
+                }}
+            >apply</button>
+        </div>}
+        <button onClick={() => setShowJsonEditor(!showJsonEditor)} >toggle json editor</button>
         {_solution.sources.map((source, i) => {
             return <div
                 key={i}
