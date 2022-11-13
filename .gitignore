@@ -3,3 +3,6 @@
 /dist-packs/
 /dist/
 /dist*/
+
+# JetBrains Rider
+.idea
