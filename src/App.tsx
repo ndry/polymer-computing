@@ -17,6 +17,9 @@ export function App() {
     const solution = useRecoilValue(solutionRecoil);
     // const world = useRecoilValue(worldRecoil);
 
+    const [displaySidePanel, setDisplaySidePanel] = useState(false);
+    const [sidePanelButton, setSidePanelButton] = useState(">");
+
     const stepState = useState(0);
     const [step] = stepState;
 
@@ -56,7 +59,19 @@ export function App() {
         <SidePanel className={cx(css({
             flexBasis: "242px",
             flexShrink: "0",
+            display: displaySidePanel ? "" : "none"
         }))} />
+        <button className={cx(css({
+            height: "fit-content",
+            background: "#008081a0",
+
+        }))}
+                onClick={() => {
+                    setDisplaySidePanel(!displaySidePanel);
+                    setSidePanelButton(displaySidePanel ? ">" : "<");
+                }}
+        >{sidePanelButton}
+        </button>
         <div className={cx(css({
             flex: "auto",
             pointerEvents: "none",
