@@ -8,7 +8,6 @@ export function SidePanel({
 }: {} & JSX.IntrinsicElements["div"]) {
     const [solution, setSolution] = useRecoilState(solutionRecoil);
     const solutions = [shortTestSolution, tetrahedron, newTetrahedron, fishSolution];
-    let counter = 1;
 
     return <div
         className={cx(
@@ -22,10 +21,10 @@ export function SidePanel({
         {...props}
     >
         {
-            solutions.map(x => <li className={cx(css({
+            solutions.map((x, counter) => <li className={cx(css({
                 background: x == solution ? "#108081a0" : ""
             }))}
-                onClick={() => setSolution(x)}>{"solution: " + counter++}</li>)
+                onClick={() => setSolution(x)}>{"solution: " + ++counter}</li>)
         }
     </div>
 }
