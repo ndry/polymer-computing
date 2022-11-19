@@ -114,3 +114,38 @@ export const fishSolution: Solution = {
         ]
     }],
 }
+export const newTetrahedronTwoRobots: Solution = {
+    problem: undefined,
+    sources: [{
+        entryPoint: [
+        ],
+        mainLoop: [
+            ["catch", "brm", 1],
+            ["link", "arm", "brm"],
+            ["grab", "arm", "arm", { d: 1 }],
+            ["link", "brm", "arm"],
+            ["catch", "brm", 4],
+            ["grab", "arm", "arm", { d: 2 }],
+            ["link", "crm", "arm"],
+            ["link", "arm", "brm"],
+
+
+        ]
+    }, {
+        entryPoint: [
+        ],
+        mainLoop: [
+            ["catch", "brm", 2],
+            ["link", "arm", "brm"],
+            ["grab", "arm", "arm", { d: 0 }],
+            ["catch", "crm", 3],
+            ["link", "brm", "crm"],
+            ["link", "arm", "crm"],
+            ["grab", "crm", "crm", { d: 0 }],
+            ["grab", "arm", "arm", { d: 2 }],
+            
+
+
+        ]
+    }],
+}   
