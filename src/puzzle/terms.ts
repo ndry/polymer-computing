@@ -37,6 +37,19 @@ export type Upc = {
     links: Link[],
 }
 
+export type ProblemTargetStructureNode =
+    { id?: string, sid: SubstanceId }
+    | { ref: string };
+    
+export type Problem = {
+    targets: Array<{
+        count: number,
+        structure: Array<[
+            ProblemTargetStructureNode,
+            ...ProblemTargetStructureNode[]]>,
+    }>;
+}
+
 export type Solution = {
     problem: undefined,
     sources: Array<{
