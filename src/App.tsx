@@ -56,13 +56,14 @@ export function App() {
             </Canvas>
         </div>
         <SidePanel className={cx(css({
-            flexBasis: "242px",
+            flexBasis: "342px",
             flexShrink: "0",
-            display: displaySidePanel ? "" : "none"
+            display: displaySidePanel ? "" : "none",
+            position: "relative",
         }))} />
         <button className={cx(css({
             height: "fit-content",
-            background: "#008081a0",
+            background: "#efcfffa0",
 
         }))}
                 onClick={() => setDisplaySidePanel(!displaySidePanel)}
