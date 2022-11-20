@@ -56,7 +56,7 @@ export function App() {
             </Canvas>
         </div>
         <SidePanel className={cx(css({
-            flexBasis: "242px",
+            flexBasis: "342px",
             flexShrink: "0",
             display: displaySidePanel ? "" : "none",
             position: "relative",

@@ -24,7 +24,7 @@ export function SidePanel({
 
         }))} />
         <div className={cx(css({
-            margin: "100px 50px 50px 50px"
+            margin: "100px 0px 0px 50px",
         }))}>
             {
                 Object.entries(solutions).map(([key, s]) => <li
