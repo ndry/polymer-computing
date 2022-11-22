@@ -1,5 +1,6 @@
 import { Solution, Xrm, Upc, Link, XrmArm } from "./terms";
 
+import { } from "../utils/graphsComparison";
 
 export function stepInPlace(
     s: Solution,

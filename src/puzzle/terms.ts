@@ -94,3 +94,7 @@ export const initialWorld = (s: Solution) => {
         upi: [initialUpc] as Upc[]
     });
 }
+
+function comapreUpi(upc1: { sid: number }, upc2: { sid: number }) {
+    return upc1.sid - upc2.sid;
+}
