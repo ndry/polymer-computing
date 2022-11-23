@@ -1,7 +1,7 @@
 
-type NodeDesc<T extends { id: never, ref: never }> = (T & { id?: string }) | { ref: string };
-type ChainDesc<T extends { id: never, ref: never }> = NodeDesc<T>[];
-type GraphOfChainsDesc<T extends { id: never, ref: never }> = ChainDesc<T>[];
+export type NodeDesc<T> = (T & ({} | { id: string })) | { ref: string };
+export type ChainDesc<T> = NodeDesc<T>[];
+export type GraphOfChainsDesc<T> = ChainDesc<T>[];
 
 type Id = [number, number];
 type Node<T> = T | { ref: Id };
@@ -40,22 +40,22 @@ const compareChains = <T>(cmp: CompareFn<T>) =>
             return 0;
         })()
 
-function normalizeDesc<T extends { id: never, ref: never }>(graph: GraphOfChainsDesc<T>) {
+export function normalizeDesc<T>(graph: GraphOfChainsDesc<T>) {
     const idMap = {} as Record<string, [number, number]>;
     for (let i = 0; i < graph.length; i++) {
         const chain = graph[i];
         for (let j = 0; j < chain.length; j++) {
-            const node = chain[j];
-            if ("id" in node) {
-                idMap[node.id] = [i, j];
+            const n = chain[j];
+            if (typeof n === "object" && n !== null && "id" in n) {
+                idMap[n.id] = [i, j];
             }
         }
     }
     return graph.map(chain =>
-        chain.map(node =>
-            ("ref" in node)
-                ? { ref: idMap[node.ref] }
-                : node));
+        chain.map(n =>
+            (typeof n === "object" && n !== null && "ref" in n)
+                ? { ref: idMap[n.ref] }
+                : n));
 }
 
 function* listLinks<T>(graph: GraphOfChains<T>) {
