@@ -4,7 +4,8 @@
   "scripts": {
     "start": "vite --config ./vite.config/vite.config.ts",
     "host": "vite --config ./vite.config/vite.config.ts --host",
-    "build": "vite --config ./vite.config/vite.config.ts build"
+    "build": "vite --config ./vite.config/vite.config.ts build",
+    "test": " ts-node --project ./script.tsconfig.json ./src/utils/graphsComparison.test.ts"
   },
   "devDependencies": {
     "@amplitude/analytics-browser": "^1.5.8",

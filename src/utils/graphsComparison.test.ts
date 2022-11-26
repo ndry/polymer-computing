@@ -95,8 +95,8 @@ function comapreNodes(upc1: Node, upc2: Node) {
 }
 
 const eq = (g1: GraphOfChainsDesc<Node>, g2: GraphOfChainsDesc<Node>) =>
-    JSON.stringify(getGraphRepresentationForEqualityComparison(normalizeDesc(g1), comapreNodes))
-    === JSON.stringify(getGraphRepresentationForEqualityComparison(normalizeDesc(g2), comapreNodes));
+    JSON.stringify([...getGraphRepresentationForEqualityComparison(normalizeDesc(g1), comapreNodes)])
+    === JSON.stringify([...getGraphRepresentationForEqualityComparison(normalizeDesc(g2), comapreNodes)]);
 
 if (!eq(fishGraph, sameFishGraph1)) {
     throw "fishGraph vs sameFishGraph1 should be eq, but are not";
