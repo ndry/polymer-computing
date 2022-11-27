@@ -1,4 +1,4 @@
-import { getGraphRepresentationForEqualityComparison, GraphOfChainsDesc, normalizeDesc } from "./graphsComparison";
+import { normalizeDesc, GraphOfChainsDesc } from "./graphsComparison";
 
 const fishGraph = [[
     { id: "head", sid: 1, },
@@ -95,36 +95,58 @@ function comapreNodes(upc1: Node, upc2: Node) {
 }
 
 const eq = (g1: GraphOfChainsDesc<Node>, g2: GraphOfChainsDesc<Node>) =>
-    JSON.stringify([...getGraphRepresentationForEqualityComparison(normalizeDesc(g1), comapreNodes)])
-    === JSON.stringify([...getGraphRepresentationForEqualityComparison(normalizeDesc(g2), comapreNodes)]);
+    JSON.stringify([...normalizeDesc(g1, comapreNodes)])
+    === JSON.stringify([...normalizeDesc(g2, comapreNodes)]);
+
+console.log(JSON.stringify([...normalizeDesc(fishGraph as GraphOfChainsDesc<Node>, comapreNodes)], undefined, 4))
 
 if (!eq(fishGraph, sameFishGraph1)) {
-    throw "fishGraph vs sameFishGraph1 should be eq, but are not";
+    console.error("xx: fishGraph vs sameFishGraph1 should be eq, but are not");
+} else {
+    console.log("ok: fishGraph vs sameFishGraph1 should be eq");
 }
 if (!eq(fishGraph, sameFishGraph2)) {
-    throw "fishGraph vs sameFishGraph2 should be eq, but are not";
+    console.error("xx: fishGraph vs sameFishGraph2 should be eq, but are not");
+} else {
+    console.log("ok: fishGraph vs sameFishGraph2 should be eq");
 }
 if (!eq(sameFishGraph1, sameFishGraph2)) {
-    throw "sameFishGraph1 vs sameFishGraph2 should be eq, but are not";
+    console.error("xx: sameFishGraph1 vs sameFishGraph2 should be eq, but are not");
+} else {
+    console.log("ok: sameFishGraph1 vs sameFishGraph2 should be eq");
 }
 if (eq(fishGraph, fishGraphButDifferent)) {
-    throw "fishGraph vs fishGraphButDifferent should not be eq, but are";
+    console.error("xx: fishGraph vs fishGraphButDifferent should not be eq, but are");
+} else {
+    console.log("ok: fishGraph vs fishGraphButDifferent should not be eq");
 }
 if (eq(fishGraph, notFishGraph)) {
-    throw "fishGraph vs notFishGraph should not be eq, but are";
+    console.error("xx: fishGraph vs notFishGraph should not be eq, but are");
+} else {
+    console.log("ok: fishGraph vs notFishGraph should not be eq");
 }
 if (eq(sameFishGraph1, fishGraphButDifferent)) {
-    throw "sameFishGraph1 vs fishGraphButDifferent should not be eq, but are";
+    console.error("xx: sameFishGraph1 vs fishGraphButDifferent should not be eq, but are");
+} else {
+    console.log("ok: sameFishGraph1 vs fishGraphButDifferent should not be eq");
 }
 if (eq(sameFishGraph1, notFishGraph)) {
-    throw "sameFishGraph1 vs notFishGraph should not be eq, but are";
+    console.error("xx: sameFishGraph1 vs notFishGraph should not be eq, but are");
+} else {
+    console.log("ok: sameFishGraph1 vs notFishGraph should not be eq");
 }
 if (eq(sameFishGraph2, fishGraphButDifferent)) {
-    throw "sameFishGraph2 vs fishGraphButDifferent should not be eq, but are";
+    console.error("xx: sameFishGraph2 vs fishGraphButDifferent should not be eq, but are");
+} else {
+    console.log("ok: sameFishGraph2 vs fishGraphButDifferent should not be eq");
 }
 if (eq(sameFishGraph2, notFishGraph)) {
-    throw "sameFishGraph2 vs notFishGraph should not be eq, but are";
+    console.error("xx: sameFishGraph2 vs notFishGraph should not be eq, but are");
+} else {
+    console.log("ok: sameFishGraph2 vs notFishGraph should not be eq");
 }
 if (eq(fishGraphButDifferent, notFishGraph)) {
-    throw "fishGraphButDifferent vs notFishGraph should not be eq, but are";
+    console.error("xx: fishGraphButDifferent vs notFishGraph should not be eq, but are");
+} else {
+    console.log("ok: fishGraphButDifferent vs notFishGraph should not be eq");
 }

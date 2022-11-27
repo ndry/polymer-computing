@@ -1,4 +1,5 @@
 import { apply } from "./apipe";
+import { tuple } from "./tuple";
 
 export const map = <T, U>(f: (x: T) => U) =>
     function* (s: Iterable<T>) { for (const x of s) yield f(x); }
@@ -28,6 +29,16 @@ export const scan = <TAccumulator, TValue>(
     reducer: (acc: TAccumulator, x: TValue) => TAccumulator,
     seed: TAccumulator
 ) => function* (s: Iterable<TValue>) { for (const x of s) yield seed = reducer(seed, x); }
+
+export const pairwise = <T>() => function* (s: Iterable<T>) { 
+    let prev = undefined as { x: T } | undefined;
+    for (const x of s) {
+        if (prev) {
+            yield tuple(prev.x, x);
+        }
+        prev = { x };
+    }
+}
 
 
 export const first = <T>() =>
