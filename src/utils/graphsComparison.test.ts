@@ -90,15 +90,12 @@ const notFishGraph = [[
 ]];
 
 type Node = { sid: number; };
-function comapreNodes(upc1: Node, upc2: Node) {
-    return upc1.sid - upc2.sid;
-}
+const comapreNodes = (upc1: Node, upc2: Node) => upc1.sid - upc2.sid;
+const structNode = ({ sid }: Node) => ({ sid });
 
 const eq = (g1: GraphOfChainsDesc<Node>, g2: GraphOfChainsDesc<Node>) =>
-    JSON.stringify([...normalizeDesc(g1, comapreNodes)])
-    === JSON.stringify([...normalizeDesc(g2, comapreNodes)]);
-
-console.log(JSON.stringify([...normalizeDesc(fishGraph as GraphOfChainsDesc<Node>, comapreNodes)], undefined, 4))
+    JSON.stringify(normalizeDesc(g1, comapreNodes, structNode))
+    === JSON.stringify(normalizeDesc(g2, comapreNodes, structNode));
 
 if (!eq(fishGraph, sameFishGraph1)) {
     console.error("xx: fishGraph vs sameFishGraph1 should be eq, but are not");
