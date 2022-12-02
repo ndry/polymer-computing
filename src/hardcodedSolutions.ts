@@ -1,7 +1,8 @@
+import { fishProblem } from "./puzzle/problems";
 import { Solution } from "./puzzle/terms";
 
 export const shortTestSolution: Solution = {
-    problem: undefined,
+    problem: fishProblem, // describe actual
     sources: [{
         entryPoint: [],
         mainLoop: [
@@ -13,7 +14,7 @@ export const shortTestSolution: Solution = {
 }
 
 export const tetrahedron: Solution = {
-    problem: undefined,
+    problem: fishProblem, // describe actual
     sources: [{
         entryPoint: [
         ],
@@ -36,7 +37,7 @@ export const tetrahedron: Solution = {
 }
 
 export const newTetrahedron: Solution = {
-    problem: undefined,
+    problem: fishProblem, // describe actual
     sources: [{
         entryPoint: [
         ],
@@ -57,7 +58,7 @@ export const newTetrahedron: Solution = {
 }
 
 export const fishSolution: Solution = {
-    problem: undefined,
+    problem: fishProblem,
     sources: [{
         entryPoint: [
         ],
@@ -115,7 +116,7 @@ export const fishSolution: Solution = {
     }],
 }
 export const newTetrahedronTwoRobots: Solution = {
-    problem: undefined,
+    problem: fishProblem, // describe actual
     sources: [{
         entryPoint: [
         ],

@@ -12,6 +12,7 @@ import { MainPanel } from "./MainPanel";
 import { useRecoilValue } from "recoil";
 import { solutionRecoil } from "./solutionRecoil";
 import { SidePanel } from "./SidePanel";
+import { color1 } from "./colorTheme";
 
 export function App() {
     const solution = useRecoilValue(solutionRecoil);
@@ -62,12 +63,12 @@ export function App() {
             transition: "all 0.5s",
             opacity: !displaySidePanel ? "0" : "1",
         }))} />
-        <button className={cx(css({
-            height: "fit-content",
-            background: "#efcfffa0",
-
-        }))}
-                onClick={() => setDisplaySidePanel(!displaySidePanel)}
+        <button
+            className={cx(css({
+                height: "fit-content",
+                background: "#efcfffa0",
+            }))}
+            onClick={() => setDisplaySidePanel(!displaySidePanel)}
         >{displaySidePanel ? "<" : ">"}
         </button>
         <div className={cx(css({
@@ -82,9 +83,18 @@ export function App() {
                 flexDirection: "column",
             }))}>
                 <div className={cx(css({
+                    position: "relative",
                     flex: "auto",
                 }))}>
                     { /* more on screen panels here */}
+                    <div className={cx(css({
+                        position: "absolute",
+                        right: 0,
+                        bottom: 0,
+                        color: color1,
+                    }))}>
+                        {world.targetsSoved} / {solution.problem.targets[0].count}
+                    </div>
                 </div>
                 <MainPanel
                     className={cx(css({

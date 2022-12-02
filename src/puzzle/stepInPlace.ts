@@ -1,6 +1,6 @@
 import { Solution, Xrm, Upc, Link, XrmArm } from "./terms";
 
-import { } from "../utils/graphsComparison";
+import { normalizeDesc } from "../utils/graphsComparison";
 
 export function stepInPlace(
     s: Solution,
@@ -8,6 +8,8 @@ export function stepInPlace(
     world: {
         xrms: (Xrm | undefined)[];
         upi: Upc[];
+        unlinkedUpi: Upc[];
+        targetsSoved: number;
     }
 ) {
     for (let j = 0; j < world.xrms.length; j++) {
@@ -126,4 +128,61 @@ export function stepInPlace(
             }
         }
     }
+
+    const linked = [...new Set(
+        world.xrms
+            .filter(xrm => xrm)
+            .flatMap(xrm => allLinkedToXrm(world.upi, xrm!)))];
+    const unlinked = world.upi.filter(u => !linked.includes(u));
+    world.unlinkedUpi.push(...unlinked);
+    world.upi = linked;
+
+    while (unlinked.length > 0) {
+        const l1 = [...allLinked(unlinked, unlinked[0])];
+        for (const u of l1) {
+            unlinked.splice(unlinked.indexOf(u), 1);
+        }
+
+        const nodes = l1.map((u, i) => ([{
+            id: "_" + i,
+            sid: u.sid,
+        }]));
+        const links = [...new Set(l1.flatMap(u => u.links))]
+            .map(l => [{ ref: "_" + l1.indexOf(l[0]) }, { ref: "_" + l1.indexOf(l[1]) }]);
+
+        const graphDesc = [...nodes, ...links];
+        const comapreNodes = (upc1: { sid: number }, upc2: { sid: number }) => upc1.sid - upc2.sid;
+        const structNode = ({ sid }: { sid: number }) => ({ sid });
+
+        const n1 = normalizeDesc(graphDesc, comapreNodes, structNode);
+        const n2 = normalizeDesc(s.problem.targets[0].structure, comapreNodes, structNode);
+        const eq = JSON.stringify(n1) === JSON.stringify(n2);
+
+        if (eq) {
+            world.targetsSoved++;
+        }
+    }
+
+}
+
+const allLinkedToXrm = (upi: Upc[], xrm: Xrm) =>
+    [xrm.arm.ox, xrm.brm.ox, xrm.crm.ox]
+        .filter(u => u)
+        .flatMap(u => [...allLinked(upi, u!)]);
+
+const allLinked = (upi: Upc[], upc: Upc) => {
+    const visited = new Set<Upc>();
+    const queue = [upc];
+
+    const tryVsit = (u: Upc) => {
+        if (visited.has(u)) { return; }
+        visited.add(u);
+        queue.push(...u.links.map(link => link[u === link[0] ? 1 : 0]));
+    }
+
+    while (queue.length > 0) {
+        tryVsit(queue.shift()!);
+    }
+
+    return visited;
 }

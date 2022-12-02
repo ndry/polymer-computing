@@ -51,7 +51,7 @@ export type Problem = {
 }
 
 export type Solution = {
-    problem: undefined,
+    problem: Problem,
     sources: Array<{
         entryPoint: XrmCommand[],
         mainLoop: XrmCommand[],
@@ -91,7 +91,9 @@ export const initialWorld = (s: Solution) => {
                 },
             } as Xrm);
         }),
-        upi: [initialUpc] as Upc[]
+        upi: [initialUpc] as Upc[],
+        unlinkedUpi: [] as Upc[],
+        targetsSoved: 0,
     });
 }
 
