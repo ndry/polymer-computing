@@ -4,7 +4,7 @@ import { first } from 'ix/iterable/first';
 import { zip } from 'ix/iterable/zip';
 import { map } from 'ix/iterable/operators/map';
 import { pairwise } from 'ix/iterable/operators/pairwise';
-import { flatMap } from 'ix/iterable/operators/flatMap';
+import { flatMap } from 'ix/iterable/operators/flatmap';
 import { OperatorFunction } from "ix/interfaces";
 
 function* findAllPaths(
