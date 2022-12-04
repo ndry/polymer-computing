@@ -1,6 +1,10 @@
 import { tuple } from "./tuple";
-import { from, zip, first } from 'ix/iterable';
-import { map, pairwise, flatMap } from 'ix/iterable/operators';
+import { from } from 'ix/iterable';
+import { first } from 'ix/iterable/first';
+import { zip } from 'ix/iterable/zip';
+import { map } from 'ix/iterable/operators/map';
+import { pairwise } from 'ix/iterable/operators/pairwise';
+import { flatMap } from 'ix/iterable/operators/flatMap';
 import { OperatorFunction } from "ix/interfaces";
 
 function* findAllPaths(
