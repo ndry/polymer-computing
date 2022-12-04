@@ -21,6 +21,7 @@
     "crypto-js": "^4.1.1",
     "emotion-icons": "^3.27.0",
     "immutability-helper": "^3.1.1",
+    "ix": "^5.0.0",
     "jsdom": "^20.0.2",
     "lodash": "^4.17.21",
     "memoizee": "^0.4.15",

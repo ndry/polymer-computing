@@ -40,7 +40,7 @@ export type Upc = {
 export type ProblemTargetStructureNode =
     { id?: string, sid: SubstanceId }
     | { ref: string };
-    
+
 export type Problem = {
     targets: Array<{
         count: number,

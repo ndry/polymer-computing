@@ -1,97 +1,97 @@
 import { normalizeDesc, GraphOfChainsDesc } from "./graphsComparison";
 
 const fishGraph = [[
-    { id: "head", sid: 1, },
-    { sid: 2, },
-    { sid: 3, },
-    { sid: 2, },
-    { sid: 3, },
-    { sid: 2, },
+    { id: "head", x: 1, },
+    { x: 2, },
+    { x: 3, },
+    { x: 2, },
+    { x: 3, },
+    { x: 2, },
     { ref: "head" },
 ], [
-    { sid: 4 },
-    { sid: 1, id: "tail" },
-    { sid: 4 },
+    { x: 4 },
+    { x: 1, id: "tail" },
+    { x: 4 },
 ], [
     { ref: "head" },
     { ref: "tail" },
 ]];
 
 const sameFishGraph1 = [[
-    { id: "head", sid: 1, },
-    { sid: 2, },
-    { sid: 3, },
-    { sid: 2, },
-    { sid: 3, },
-    { sid: 2, },
+    { id: "head", x: 1, },
+    { x: 2, },
+    { x: 3, },
+    { x: 2, },
+    { x: 3, },
+    { x: 2, },
     { ref: "head" },
 ], [
     { ref: "tail" },
     { ref: "head" },
 ], [
-    { sid: 4 },
-    { sid: 1, id: "tail" },
-    { sid: 4 },
+    { x: 4 },
+    { x: 1, id: "tail" },
+    { x: 4 },
 ]];
 
 const sameFishGraph2 = [[
-    { id: "head", sid: 2 },
-    { sid: 3 },
-    { sid: 2 },
-    { id: "head-back", sid: 1 },
+    { id: "head", x: 2 },
+    { x: 3 },
+    { x: 2 },
+    { id: "head-back", x: 1 },
 ], [
     { ref: "head" },
-    { sid: 3 },
-    { sid: 2 },
+    { x: 3 },
+    { x: 2 },
     { ref: "head-back" },
 ], [
     { ref: "head-back" },
-    { id: "tail", sid: 1 },
-    { sid: 4 },
+    { id: "tail", x: 1 },
+    { x: 4 },
 ], [
     { ref: "tail" },
-    { sid: 4 },
+    { x: 4 },
 ]];
 
 const fishGraphButDifferent = [[
-    { id: "head", sid: 1, },
-    { sid: 2, },
-    { sid: 3, },
-    { sid: 4, },
-    { sid: 3, },
-    { sid: 2, },
+    { id: "head", x: 1, },
+    { x: 2, },
+    { x: 3, },
+    { x: 4, },
+    { x: 3, },
+    { x: 2, },
     { ref: "head" }
 ], [
-    { sid: 2 },
-    { sid: 1, id: "tail" },
-    { sid: 2 },
+    { x: 2 },
+    { x: 1, id: "tail" },
+    { x: 2 },
 ], [
     { ref: "head" },
     { ref: "tail" },
 ]];
 
 const notFishGraph = [[
-    { id: "head", sid: 1, },
-    { sid: 2, },
-    { sid: 3, },
-    { sid: 4, },
-    { sid: 3, },
-    { sid: 2, },
+    { id: "head", x: 1, },
+    { x: 2, },
+    { x: 3, },
+    { x: 4, },
+    { x: 3, },
+    { x: 2, },
     { ref: "head" }
 ], [
-    { sid: 2 },
-    { sid: 1, id: "tail" },
-    { sid: 2 },
-    { sid: 3 },
+    { x: 2 },
+    { x: 1, id: "tail" },
+    { x: 2 },
+    { x: 3 },
 ], [
     { ref: "head" },
-    { sid: 1 },
+    { x: 1 },
     { ref: "tail" },
 ]];
 
-type Node = { sid: number; };
-const comapreNodes = (upc1: Node, upc2: Node) => upc1.sid - upc2.sid;
-const structNode = ({ sid }: Node) => ({ sid });
+type Node = { x: number; };
+const comapreNodes = (upc1: Node, upc2: Node) => upc1.x - upc2.x;
+const structNode = ({ x }: Node) => ({ x });
 
 const eq = (g1: GraphOfChainsDesc<Node>, g2: GraphOfChainsDesc<Node>) =>
     JSON.stringify(normalizeDesc(g1, comapreNodes, structNode))
